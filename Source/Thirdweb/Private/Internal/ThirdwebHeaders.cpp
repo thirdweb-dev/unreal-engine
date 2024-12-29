@@ -2,6 +2,7 @@
 
 #include "Internal/ThirdwebHeaders.h"
 
+#include "Containers/UnrealString.h"
 #include "Interfaces/IHttpRequest.h"
 
 FThirdwebHeaders::FThirdwebHeaders()
@@ -15,6 +16,15 @@ void FThirdwebHeaders::Set(const FString& Name, const FString& Value, const bool
 		Headers.Add(Name, Value);
 	}
 }
+
+void FThirdwebHeaders::SetMany(TArray<TTuple<FString, FString>> Pairs)
+{
+	for (const auto& Pair : Pairs)
+	{
+		Set(Pair.Key, Pair.Value);
+	}
+}
+
 
 bool FThirdwebHeaders::Remove(const FString& Name)
 {

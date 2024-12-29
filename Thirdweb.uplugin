@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
-	"Version": 200,
-	"VersionName": "2.0.0-dev",
+	"Version": 184,
+	"VersionName": "1.8.4",
 	"FriendlyName": "Thirdweb SDK",
 	"Description": "ThirdwebSDK for Unreal Engine",
 	"Category": "Thirdweb",
@@ -12,7 +12,7 @@
 	"SupportURL": "https://thirdweb.com/support",
 	"CanContainContent": true,
 	"IsBetaVersion": false,
-	"IsExperimentalVersion": true,
+	"IsExperimentalVersion": false,
 	"Installed": false,
 	"EditorCustomVirtualPath": "Thirdweb",
 	"Modules": [
