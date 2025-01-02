@@ -16,6 +16,8 @@ namespace TwPins
 	extern const FName Success;
 	extern const FName Failed;
 	extern const FName Error;
+
+	extern const FName Data;
 }
 
 UCLASS(Abstract)

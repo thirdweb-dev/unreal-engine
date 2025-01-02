@@ -30,11 +30,8 @@ namespace ThirdwebEngine::Contract
 		const FSmartWalletHandle& SmartWallet,
 		const FString& FactoryAddress,
 		const FString& IdempotencyKey,
-		const FString& FunctionName,
-		const TArray<FString>& Args,
-		const FThirdwebEngineTransactionOverrides& TxOverrides,
-		const FString& Abi,
 		const bool bSimulateTx,
+		const TSharedPtr<FJsonObject>& Data,
 		const FStringDelegate& SuccessDelegate,
 		const FStringDelegate& ErrorDelegate
 	);

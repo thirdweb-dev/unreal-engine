@@ -19,6 +19,8 @@ namespace TwPins
 	const FName Success = FName(TEXT("Success"));
 	const FName Failed = FName(TEXT("Failed"));
 	const FName Error = FName(TEXT("Error"));
+	
+	const FName Data = FName(TEXT("Data"));
 }
 
 #define LOCTEXT_NAMESPACE "ThirdwebUncookedOnly"

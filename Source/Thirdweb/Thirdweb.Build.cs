@@ -109,6 +109,7 @@ public class Thirdweb : ModuleRules
 			"HTTPServer",
 			"Networking",
 			"Json",
+			"JsonUtilities",
 			// OAuth Widget UI deps
 			"UMG",
 			"Slate",

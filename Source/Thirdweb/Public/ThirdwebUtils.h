@@ -101,6 +101,9 @@ namespace ThirdwebUtils
 	{
 		extern TSharedPtr<FJsonObject> ToJson(const FString& String);
 		extern TArray<TSharedPtr<FJsonValue>> ToJsonArray(const FString& String);
+		// Meant for dynamic string arrays that hold different value types
+		extern TArray<TSharedPtr<FJsonValue>> ToJsonArray(const TArray<FString>& DynamicArray);
+		extern TSharedPtr<FJsonValue> ToJsonValue(const FString& String);
 		extern FString ToString(const TSharedPtr<FJsonObject>& JsonObject);
 		extern FString ToString(const TSharedPtr<FJsonValue>& JsonValue);
 		extern FString AsString(const TSharedPtr<FJsonValue>& JsonValue);

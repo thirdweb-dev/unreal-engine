@@ -9,7 +9,6 @@
 namespace TwPins
 {
 	extern const FName Uri;
-	extern const FName Data;
 }
 
 UCLASS()

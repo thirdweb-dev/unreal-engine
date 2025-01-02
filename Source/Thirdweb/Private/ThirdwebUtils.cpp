@@ -540,6 +540,33 @@ namespace ThirdwebUtils
 			return JsonArray;
 		}
 
+		TArray<TSharedPtr<FJsonValue>> ToJsonArray(const TArray<FString>& DynamicArray)
+		{
+			TArray<TSharedPtr<FJsonValue>> JsonValueArray;
+			for (const FString& Item : DynamicArray)
+			{
+				JsonValueArray.Emplace(ToJsonValue(Item));
+			}
+			return JsonValueArray;
+		}
+
+		TSharedPtr<FJsonValue> ToJsonValue(const FString& String)
+		{
+			if (String.StartsWith(TEXT("{")) && String.EndsWith(TEXT("}")))
+			{
+				return MakeShareable(new FJsonValueObject(ToJson(String)));
+			}
+			if (String.StartsWith(TEXT("[")) && String.EndsWith(TEXT("]")))
+			{
+				return MakeShareable(new FJsonValueArray(ToJsonArray(String)));
+			}
+			if (String.ToLower().Equals(TEXT("true")) || String.ToLower().Equals(TEXT("false")))
+			{
+				return MakeShareable(new FJsonValueBoolean(String.ToLower().Equals(TEXT("true"))));
+			}
+			return MakeShareable(new FJsonValueString(String));
+		}
+
 		FString ToString(const TSharedPtr<FJsonObject>& JsonObject)
 		{
 			FString Out;

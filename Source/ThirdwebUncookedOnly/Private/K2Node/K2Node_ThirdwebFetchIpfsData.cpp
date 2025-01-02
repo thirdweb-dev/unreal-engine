@@ -18,7 +18,6 @@
 namespace TwPins
 {
 	const FName Uri = FName(TEXT("Uri"));
-	const FName Data = FName(TEXT("Data"));
 }
 
 #define LOCTEXT_NAMESPACE "ThirdwebUncookedOnly"

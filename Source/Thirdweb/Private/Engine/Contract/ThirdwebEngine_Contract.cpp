@@ -12,6 +12,7 @@
 #include "Internal/ThirdwebURLSearchParams.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Wallets/ThirdwebSmartWalletHandle.h"
+#include "WorldPartition/WorldPartitionBuilder.h"
 
 namespace ThirdwebEngine::Contract
 {
@@ -63,11 +64,8 @@ namespace ThirdwebEngine::Contract
 		const FSmartWalletHandle& SmartWallet,
 		const FString& FactoryAddress,
 		const FString& IdempotencyKey,
-		const FString& FunctionName,
-		const TArray<FString>& Args,
-		const FThirdwebEngineTransactionOverrides& TxOverrides,
-		const FString& Abi,
 		const bool bSimulateTx,
+		const TSharedPtr<FJsonObject>& Data,
 		const FStringDelegate& SuccessDelegate,
 		const FStringDelegate& ErrorDelegate
 	)
@@ -80,25 +78,22 @@ namespace ThirdwebEngine::Contract
 		Headers.Set(TEXT("x-account-factory-address"), FactoryAddress);
 		Headers.UpdateRequest(Request);
 		
+		if (!Data.IsValid())
 		{
-			TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
-			JsonObject->SetStringField(TEXT("functionName"), FunctionName);
-			TArray<TSharedPtr<FJsonValue>> JsonArgs;
-			for (const FString& Arg : Args)
-			{
-				JsonArgs.Emplace(MakeShareable(new FJsonValueString(Arg)));
-			}
-			JsonObject->SetArrayField(TEXT("args"), JsonArgs);
-			if (!TxOverrides.IsDefault())
-			{
-				JsonObject->SetObjectField(TEXT("txOverrides"), TxOverrides.ToJson());
-			}
-			if (!Abi.IsEmpty())
-			{
-				JsonObject->SetArrayField(TEXT("abi"), ThirdwebUtils::Json::ToJsonArray(Abi));
-			}
-			Request->SetContentAsString(ThirdwebUtils::Json::ToString(JsonObject));
+			ErrorDelegate.Execute(TEXT("Data object is required"));
+			return;
 		}
+		if (!Data->HasTypedField<EJson::String>(TEXT("functionName")) || Data->GetStringField(TEXT("functionName")).IsEmpty())
+		{
+			ErrorDelegate.Execute(TEXT("Data object must contain a functionName field"));
+			return;
+		}
+		if (!Data->HasField(TEXT("args")))
+		{
+			ErrorDelegate.Execute(TEXT("Data object must contain an args field"));
+			return;
+		}
+		Request->SetContentAsString(ThirdwebUtils::Json::ToString(Data));
 
 		FThirdwebURLSearchParams Params;
 		Params.Set(TEXT("simulateTx"), true, bSimulateTx);
