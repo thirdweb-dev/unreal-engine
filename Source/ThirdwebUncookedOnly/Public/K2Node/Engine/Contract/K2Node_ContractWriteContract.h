@@ -11,7 +11,6 @@ namespace TwPins
 	extern const FName ChainId;
 	extern const FName ContractAddress;
 	extern const FName BackendWalletAddress;
-	extern const FName FactoryAddress;
 	extern const FName IdempotencyKey;
 	extern const FName FunctionName;
 	extern const FName Args;
@@ -56,7 +55,6 @@ protected:
 	virtual UEdGraphPin* GetChainIdPin() const;
 	virtual UEdGraphPin* GetContractAddressPin() const;
 	virtual UEdGraphPin* GetBackendWalletAddressPin() const;
-	virtual UEdGraphPin* GetFactoryAddressPin() const;
 	virtual UEdGraphPin* GetIdempotencyKeyPin() const;
 	virtual UEdGraphPin* GetFunctionNamePin() const;
 	virtual UEdGraphPin* GetArgsPin() const;

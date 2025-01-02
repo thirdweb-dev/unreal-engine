@@ -11,7 +11,6 @@ namespace TwPins
 	const FName ChainId = FName(TEXT("ChainId"));
 	const FName ContractAddress = FName(TEXT("ContractAddress"));
 	const FName BackendWalletAddress = FName(TEXT("BackendWalletAddress"));
-	const FName FactoryAddress = FName(TEXT("FactoryAddress"));
 	const FName IdempotencyKey = FName(TEXT("IdempotencyKey"));
 	const FName FunctionName = FName(TEXT("FunctionName"));
 	const FName Args = FName(TEXT("Args"));
@@ -92,22 +91,23 @@ void UK2Node_ContractWriteContract::AllocateDefaultPins()
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::ContractAddress);
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::BackendWalletAddress);
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, FSmartWalletHandle::StaticStruct(), TwPins::SmartWallet);
-	SetPinAdvancedView(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::FactoryAddress), true);
-	SetPinAdvancedView(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::IdempotencyKey), true);
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::FunctionName);
 	FCreatePinParams ArgsPinParams = FCreatePinParams();
 	ArgsPinParams.ContainerType = EPinContainerType::Array;
 	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::Args, ArgsPinParams);
+	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Boolean, TwPins::SimulateTx);
 	SetPinAdvancedView(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, FThirdwebEngineTransactionOverrides::StaticStruct(), TwPins::TxOverrides));
 	SetPinAdvancedView(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::Abi), true);
 	SetPinVisibility(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Struct, FJsonObjectWrapper::StaticStruct(), TwPins::Data), false)->PinToolTip =
-		TEXT("Raw payload for the write contract endpoint. Must match all fields defined in the api documentation\nExample Payload:\n{\n  \"functionName\": \"deposit\"\n  \"args\": [ 1000000 ]\n}\n\nDocumentation: https://thirdweb-engine.apidocumentation.com/reference#tag/contract/POST/contract/{chain}/{contractAddress}/write\n\nJson Object Wrapper\nJson Object Structure");
-	
-	
-	CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Boolean, TwPins::SimulateTx);
+		TEXT(
+			"Raw payload for the write contract endpoint. Must match all fields defined in the api documentation\nExample Payload:\n{\n  \"functionName\": \"deposit\"\n  \"args\": [ 1000000 ]\n}\n\nDocumentation: https://thirdweb-engine.apidocumentation.com/reference#tag/contract/POST/contract/{chain}/{contractAddress}/write\n\nJson Object Wrapper\nJson Object Structure");
+	SetPinAdvancedView(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::IdempotencyKey), true);
 
 	// Output Pins
-	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_String, TwPins::QueueId);
+	SetPinFriendlyName(
+		CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_String, TwPins::QueueId),
+		LOCTEXT("K2Node_ContractWriteContract_QueueId", "Queue ID")
+	);
 	CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_String, TwPins::Error);
 
 	UpdatePins();
@@ -161,13 +161,6 @@ UEdGraphPin* UK2Node_ContractWriteContract::GetContractAddressPin() const
 UEdGraphPin* UK2Node_ContractWriteContract::GetBackendWalletAddressPin() const
 {
 	UEdGraphPin* Pin = FindPin(TwPins::BackendWalletAddress);
-	check(Pin == NULL || Pin->Direction == EGPD_Input);
-	return Pin;
-}
-
-UEdGraphPin* UK2Node_ContractWriteContract::GetFactoryAddressPin() const
-{
-	UEdGraphPin* Pin = FindPin(TwPins::FactoryAddress);
 	check(Pin == NULL || Pin->Direction == EGPD_Input);
 	return Pin;
 }

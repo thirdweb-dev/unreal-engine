@@ -28,7 +28,6 @@ namespace ThirdwebEngine::Contract
 		const FString& ContractAddress,
 		const FString& BackendWalletAddress,
 		const FSmartWalletHandle& SmartWallet,
-		const FString& FactoryAddress,
 		const FString& IdempotencyKey,
 		const bool bSimulateTx,
 		const TSharedPtr<FJsonObject>& Data,

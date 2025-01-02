@@ -15,7 +15,6 @@ UAsyncTaskContractWriteContract* UAsyncTaskContractWriteContract::WriteContract(
 	const FString& ContractAddress,
 	const FString& BackendWalletAddress,
 	const FSmartWalletHandle& SmartWallet,
-	const FString& FactoryAddress,
 	const FString& IdempotencyKey,
 	const FString& FunctionName,
 	const TArray<FString>& Args,
@@ -34,7 +33,7 @@ UAsyncTaskContractWriteContract* UAsyncTaskContractWriteContract::WriteContract(
 	{
 		JsonObjectWrapper.JsonObject->SetArrayField(TEXT("abi"), ThirdwebUtils::Json::ToJsonArray(Abi));
 	}
-	return WriteContractRaw(WorldContextObject, ChainId, ContractAddress, BackendWalletAddress, SmartWallet, FactoryAddress, IdempotencyKey, JsonObjectWrapper, bSimulateTx);
+	return WriteContractRaw(WorldContextObject, ChainId, ContractAddress, BackendWalletAddress, SmartWallet, IdempotencyKey, JsonObjectWrapper, bSimulateTx);
 }
 
 UAsyncTaskContractWriteContract* UAsyncTaskContractWriteContract::WriteContractRaw(
@@ -43,7 +42,6 @@ UAsyncTaskContractWriteContract* UAsyncTaskContractWriteContract::WriteContractR
 	const FString& ContractAddress,
 	const FString& BackendWalletAddress,
 	const FSmartWalletHandle& SmartWallet,
-	const FString& FactoryAddress,
 	const FString& IdempotencyKey,
 	const FJsonObjectWrapper& Data,
 	const bool bSimulateTx
@@ -54,7 +52,6 @@ UAsyncTaskContractWriteContract* UAsyncTaskContractWriteContract::WriteContractR
 	Task->ContractAddress = ContractAddress.TrimStartAndEnd();
 	Task->BackendWalletAddress = BackendWalletAddress.TrimStartAndEnd();
 	Task->SmartWallet = SmartWallet;
-	Task->FactoryAddress = FactoryAddress.TrimStartAndEnd();
 	Task->IdempotencyKey = IdempotencyKey.TrimStartAndEnd();
 	Task->bSimulateTx = bSimulateTx;
 	Task->Data = Data.JsonObject;
@@ -69,7 +66,6 @@ void UAsyncTaskContractWriteContract::Activate()
 		ContractAddress,
 		BackendWalletAddress,
 		SmartWallet,
-		FactoryAddress,
 		IdempotencyKey,
 		bSimulateTx,
 		Data,

@@ -22,7 +22,6 @@ public:
 		const FString& ContractAddress,
 		const FString& BackendWalletAddress,
 		const FSmartWalletHandle& SmartWallet,
-		const FString& FactoryAddress,
 		const FString& IdempotencyKey,
 		const FString& FunctionName,
 		const TArray<FString>& Args,
@@ -38,7 +37,6 @@ public:
 		const FString& ContractAddress,
 		const FString& BackendWalletAddress,
 		const FSmartWalletHandle& SmartWallet,
-		const FString& FactoryAddress,
 		const FString& IdempotencyKey,
 		const FJsonObjectWrapper& Data,
 		const bool bSimulateTx
@@ -68,9 +66,6 @@ protected:
 
 	UPROPERTY(Transient)
 	FSmartWalletHandle SmartWallet;
-
-	UPROPERTY(Transient)
-	FString FactoryAddress;
 
 	UPROPERTY(Transient)
 	FString IdempotencyKey;

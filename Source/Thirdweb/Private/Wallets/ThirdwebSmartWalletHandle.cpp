@@ -24,7 +24,7 @@
 
 #include "Tasks/Task.h"
 
-FSmartWalletHandle::FSmartWalletHandle(const FInAppWalletHandle& InInAppWallet, const FString& Int64String)
+FSmartWalletHandle::FSmartWalletHandle(const FInAppWalletHandle& InInAppWallet, const FString& Int64String, const FString& InCustomFactory)
 {
 	Type = Smart;
 	int64 InID;
@@ -32,6 +32,7 @@ FSmartWalletHandle::FSmartWalletHandle(const FInAppWalletHandle& InInAppWallet, 
 	FDefaultValueHelper::ParseInt64(Int64String, InID);
 	ensureAlwaysMsgf(InID > 0, TEXT("Invalid id 0"));
 	ID = InID;
+	CustomFactory = InCustomFactory;
 }
 
 void FSmartWalletHandle::Create(const FInAppWalletHandle& InInAppWallet,
@@ -66,7 +67,7 @@ void FSmartWalletHandle::Create(const FInAppWalletHandle& InInAppWallet,
 			TO_RUST_STRING(AccountOverride)
 		).AssignResult(Error))
 		{
-			const FSmartWalletHandle SmartWallet = FSmartWalletHandle(InInAppWallet, Error);
+			const FSmartWalletHandle SmartWallet = FSmartWalletHandle(InInAppWallet, Error, Factory);
 			SuccessDelegate.Execute(SmartWallet);
 			ThirdwebUtils::Internal::SendConnectEvent(SmartWallet);
 		}

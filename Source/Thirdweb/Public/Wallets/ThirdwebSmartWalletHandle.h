@@ -19,6 +19,7 @@ struct THIRDWEB_API FSmartWalletHandle : public FWalletHandle
 	FSmartWalletHandle()
 	{
 		Type = Smart;
+		CustomFactory = "";
 	}
 
 private:
@@ -28,9 +29,10 @@ private:
 		InAppWallet = InInAppWallet;
 		ensureAlwaysMsgf(InID > 0, TEXT("Invalid id 0"));
 		ID = InID;
+		CustomFactory = "";
 	}
 
-	explicit FSmartWalletHandle(const FInAppWalletHandle& InInAppWallet, const FString& Int64String);
+	explicit FSmartWalletHandle(const FInAppWalletHandle& InInAppWallet, const FString& Int64String, const FString& InCustomFactory = "");
 
 public:
 	virtual bool IsValid() const override { return Super::IsValid() && InAppWallet.IsValid(); }
@@ -83,6 +85,10 @@ public:
 	/** Get the active signers of a smart wallet */
 	void GetActiveSigners(const FGetActiveSignersDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate);
 
+	/** Get the custom factory address of a smart wallet */
+	FString GetCustomFactory() const { return CustomFactory; }
+
 private:
 	FInAppWalletHandle InAppWallet;
+	FString CustomFactory;
 };

@@ -62,7 +62,6 @@ namespace ThirdwebEngine::Contract
 		const FString& ContractAddress,
 		const FString& BackendWalletAddress,
 		const FSmartWalletHandle& SmartWallet,
-		const FString& FactoryAddress,
 		const FString& IdempotencyKey,
 		const bool bSimulateTx,
 		const TSharedPtr<FJsonObject>& Data,
@@ -75,7 +74,11 @@ namespace ThirdwebEngine::Contract
 		Headers.Set(TEXT("x-backend-wallet-address"), BackendWalletAddress);
 		Headers.Set(TEXT("x-idempotency-key"), IdempotencyKey);
 		Headers.Set(TEXT("x-account-address"), SmartWallet.ToAddress(), SmartWallet.IsValid());
-		Headers.Set(TEXT("x-account-factory-address"), FactoryAddress);
+		if (FString Factory = SmartWallet.GetCustomFactory(); !Factory.IsEmpty())
+		{
+			Headers.Set(TEXT("x-account-factory-address"), Factory);
+		}
+		
 		Headers.UpdateRequest(Request);
 		
 		if (!Data.IsValid())
