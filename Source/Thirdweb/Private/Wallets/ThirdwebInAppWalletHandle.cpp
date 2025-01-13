@@ -90,43 +90,50 @@ void FInAppWalletHandle::CreateEmailWallet(
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[Email, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (Thirdweb::create_ecosystem_wallet(TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, TO_RUST_STRING(Email), nullptr,
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()), nullptr, nullptr)
-					.AssignResult(Error))
-			{
-				SuccessDelegate.Execute(FInAppWalletHandle(EInAppSource::Email, Error));
-				return;
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [Email, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (Thirdweb::create_ecosystem_wallet(
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr,
+				                  TO_RUST_STRING(Email), nullptr,
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()), nullptr, nullptr)
+			                  .AssignResult(Error))
+		                  {
+			                  SuccessDelegate.Execute(FInAppWalletHandle(EInAppSource::Email, Error));
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::CreateOAuthWallet(
-	const EThirdwebOAuthProvider Provider, const FCreateInAppWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+	const EThirdwebOAuthProvider Provider, const FCreateInAppWalletDelegate& SuccessDelegate,
+	const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[Provider, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (UThirdwebRuntimeSettings::IsEcosystem())
-				if (Thirdweb::create_ecosystem_wallet(TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-						TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-						TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-						TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr, nullptr,
-						TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
-						TO_RUST_STRING(ThirdwebUtils::ToString(Provider)), nullptr)
-						.AssignResult(Error))
-				{
-					SuccessDelegate.Execute(FInAppWalletHandle(Provider, Error));
-					return;
-				}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [Provider, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (UThirdwebRuntimeSettings::IsEcosystem())
+			                  if (Thirdweb::create_ecosystem_wallet(
+					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr,
+					                  nullptr,
+					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
+					                  TO_RUST_STRING(ThirdwebUtils::ToString(Provider)), nullptr)
+				                  .AssignResult(Error))
+			                  {
+				                  SuccessDelegate.Execute(FInAppWalletHandle(Provider, Error));
+				                  return;
+			                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::CreatePhoneWallet(
@@ -134,44 +141,51 @@ void FInAppWalletHandle::CreatePhoneWallet(
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[Phone, SuccessDelegate, ErrorDelegate] {
-			FString Error;
+	                  [Phone, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
 
-			if (Thirdweb::create_ecosystem_wallet(TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr, TO_RUST_STRING(Phone),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()), nullptr, nullptr)
-					.AssignResult(Error))
-			{
-				SuccessDelegate.Execute(FInAppWalletHandle(EInAppSource::Phone, Error));
-				return;
-			}
+		                  if (Thirdweb::create_ecosystem_wallet(
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr,
+				                  TO_RUST_STRING(Phone),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()), nullptr, nullptr)
+			                  .AssignResult(Error))
+		                  {
+			                  SuccessDelegate.Execute(FInAppWalletHandle(EInAppSource::Phone, Error));
+			                  return;
+		                  }
 
-			ErrorDelegate.Execute(Error);
-		});
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
-void FInAppWalletHandle::CreateSiweWallet(const FCreateInAppWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::CreateSiweWallet(const FCreateInAppWalletDelegate& SuccessDelegate,
+                                          const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[SuccessDelegate, ErrorDelegate] {
-			static FString Provider = TEXT("SIWE");
-			FString		   Error;
+	                  [SuccessDelegate, ErrorDelegate]
+	                  {
+		                  static FString Provider = TEXT("SIWE");
+		                  FString Error;
 
-			if (Thirdweb::create_ecosystem_wallet(TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr, nullptr,
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()), TO_RUST_STRING(Provider), nullptr)
-					.AssignResult(Error))
-			{
-				SuccessDelegate.Execute(FInAppWalletHandle(Siwe, Error));
-				return;
-			}
-			ErrorDelegate.Execute(Error);
-		});
+		                  if (Thirdweb::create_ecosystem_wallet(
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr, nullptr,
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
+				                  TO_RUST_STRING(Provider), nullptr)
+			                  .AssignResult(Error))
+		                  {
+			                  SuccessDelegate.Execute(FInAppWalletHandle(Siwe, Error));
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::CreateCustomAuthWallet(
@@ -187,23 +201,26 @@ void FInAppWalletHandle::CreateCustomAuthWallet(
 		return;
 	}
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[Source, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (Thirdweb::create_ecosystem_wallet(TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr, nullptr,
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
-					TO_RUST_STRING(FString(GetSourceString(Source))),
-					TO_RUST_STRING(UThirdwebRuntimeSettings::GetEncryptionKey()) // legacy, will be used if migrating only
-					)
-					.AssignResult(Error))
-			{
-				SuccessDelegate.Execute(FInAppWalletHandle(Source, Error));
-				return;
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [Source, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (Thirdweb::create_ecosystem_wallet(
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr, nullptr,
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
+				                  TO_RUST_STRING(FString(GetSourceString(Source))),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEncryptionKey())
+				                  // legacy, will be used if migrating only
+			                  )
+			                  .AssignResult(Error))
+		                  {
+			                  SuccessDelegate.Execute(FInAppWalletHandle(Source, Error));
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 bool FInAppWalletHandle::IsConnected() const
@@ -222,68 +239,73 @@ void FInAppWalletHandle::SendOTP(const FStreamableDelegate& SuccessDelegate, con
 	CHECK_VALIDITY(ErrorDelegate)
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (UThirdwebRuntimeSettings::IsEcosystem())
-			{
-				switch (ThisCopy.GetSource())
-				{
-					case Phone:
-					{
-						if (Thirdweb::ecosystem_wallet_send_otp_phone(ThisCopy.GetID()).AssignResult(Error, true))
-						{
-							SuccessDelegate.Execute();
-							return;
-						}
-						break;
-					}
-					case Email:
-					{
-						if (Thirdweb::ecosystem_wallet_send_otp_email(ThisCopy.GetID()).AssignResult(Error, true))
-						{
-							SuccessDelegate.Execute();
-							return;
-						}
-						break;
-					}
-					default:
-					{
-						ErrorDelegate.Execute(TEXT("Wallet handle is not email/phone source"));
-						return;
-					}
-				}
-			}
-			else
-			{
-				switch (ThisCopy.GetSource())
-				{
-					case Phone:
-					{
-						if (Thirdweb::ecosystem_wallet_send_otp_phone(ThisCopy.GetID()).AssignResult(Error, true))
-						{
-							SuccessDelegate.Execute();
-							return;
-						}
-						break;
-					}
-					case Email:
-					{
-						if (Thirdweb::ecosystem_wallet_send_otp_email(ThisCopy.GetID()).AssignResult(Error, true))
-						{
-							SuccessDelegate.Execute();
-							return;
-						}
-						break;
-					}
-					default:
-					{
-						ErrorDelegate.Execute(TEXT("Wallet handle is not email/phone source"));
-						return;
-					}
-				}
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (UThirdwebRuntimeSettings::IsEcosystem())
+		                  {
+			                  switch (ThisCopy.GetSource())
+			                  {
+			                  case Phone:
+				                  {
+					                  if (Thirdweb::ecosystem_wallet_send_otp_phone(ThisCopy.GetID()).AssignResult(
+						                  Error, true))
+					                  {
+						                  SuccessDelegate.Execute();
+						                  return;
+					                  }
+					                  break;
+				                  }
+			                  case Email:
+				                  {
+					                  if (Thirdweb::ecosystem_wallet_send_otp_email(ThisCopy.GetID()).AssignResult(
+						                  Error, true))
+					                  {
+						                  SuccessDelegate.Execute();
+						                  return;
+					                  }
+					                  break;
+				                  }
+			                  default:
+				                  {
+					                  ErrorDelegate.Execute(TEXT("Wallet handle is not email/phone source"));
+					                  return;
+				                  }
+			                  }
+		                  }
+		                  else
+		                  {
+			                  switch (ThisCopy.GetSource())
+			                  {
+			                  case Phone:
+				                  {
+					                  if (Thirdweb::ecosystem_wallet_send_otp_phone(ThisCopy.GetID()).AssignResult(
+						                  Error, true))
+					                  {
+						                  SuccessDelegate.Execute();
+						                  return;
+					                  }
+					                  break;
+				                  }
+			                  case Email:
+				                  {
+					                  if (Thirdweb::ecosystem_wallet_send_otp_email(ThisCopy.GetID()).AssignResult(
+						                  Error, true))
+					                  {
+						                  SuccessDelegate.Execute();
+						                  return;
+					                  }
+					                  break;
+				                  }
+			                  default:
+				                  {
+					                  ErrorDelegate.Execute(TEXT("Wallet handle is not email/phone source"));
+					                  return;
+				                  }
+			                  }
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::SignInWithOTP(
@@ -298,72 +320,78 @@ void FInAppWalletHandle::SignInWithOTP(
 	}
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, OTP, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (UThirdwebRuntimeSettings::IsEcosystem())
-			{
-				switch (ThisCopy.GetSource())
-				{
-					case Phone:
-					{
-						if (Thirdweb::ecosystem_wallet_sign_in_with_otp_phone(ThisCopy.GetID(), TO_RUST_STRING(OTP))
-								.AssignResult(Error, true))
-						{
-							ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-							SuccessDelegate.Execute();
-							return;
-						}
-						break;
-					}
-					case Email:
-					{
-						if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(ThisCopy.GetID(), TO_RUST_STRING(OTP))
-								.AssignResult(Error, true))
-						{
-							ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-							SuccessDelegate.Execute();
-							return;
-						}
-						break;
-					}
-					default:
-						return;
-				}
-			}
-			else
-			{
-				switch (ThisCopy.GetSource())
-				{
-					case Phone:
-					{
-						if (Thirdweb::ecosystem_wallet_sign_in_with_otp_phone(ThisCopy.GetID(), TO_RUST_STRING(OTP))
-								.AssignResult(Error, true))
-						{
-							ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-							SuccessDelegate.Execute();
-							return;
-						}
-					}
-					case Email:
-					{
-						if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(ThisCopy.GetID(), TO_RUST_STRING(OTP))
-								.AssignResult(Error, true))
-						{
-							ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-							SuccessDelegate.Execute();
-							return;
-						}
-					}
-					default:
-						return;
-				}
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, OTP, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (UThirdwebRuntimeSettings::IsEcosystem())
+		                  {
+			                  switch (ThisCopy.GetSource())
+			                  {
+			                  case Phone:
+				                  {
+					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_phone(
+							                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
+						                  .AssignResult(Error, true))
+					                  {
+						                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+						                  SuccessDelegate.Execute();
+						                  return;
+					                  }
+					                  break;
+				                  }
+			                  case Email:
+				                  {
+					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(
+							                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
+						                  .AssignResult(Error, true))
+					                  {
+						                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+						                  SuccessDelegate.Execute();
+						                  return;
+					                  }
+					                  break;
+				                  }
+			                  default:
+				                  return;
+			                  }
+		                  }
+		                  else
+		                  {
+			                  switch (ThisCopy.GetSource())
+			                  {
+			                  case Phone:
+				                  {
+					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_phone(
+							                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
+						                  .AssignResult(Error, true))
+					                  {
+						                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+						                  SuccessDelegate.Execute();
+						                  return;
+					                  }
+				                  }
+			                  case Email:
+				                  {
+					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(
+							                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
+						                  .AssignResult(Error, true))
+					                  {
+						                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+						                  SuccessDelegate.Execute();
+						                  return;
+					                  }
+				                  }
+			                  default:
+				                  return;
+			                  }
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
-void FInAppWalletHandle::LinkOTP(const FInAppWalletHandle& Wallet, const FString& OTP, const FStreamableDelegate& SuccessDelegate,
-	const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::LinkOTP(const FInAppWalletHandle& Wallet, const FString& OTP,
+                                 const FStreamableDelegate& SuccessDelegate,
+                                 const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -375,36 +403,39 @@ void FInAppWalletHandle::LinkOTP(const FInAppWalletHandle& Wallet, const FString
 	}
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Wallet, OTP, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			switch (ThisCopy.GetSource())
-			{
-				case Phone:
-				{
-					if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(), Wallet.GetID(), TO_RUST_STRING(OTP), nullptr,
-							nullptr, nullptr, nullptr, nullptr, nullptr)
-							.AssignResult(Error, true))
-					{
-						SuccessDelegate.Execute();
-						return;
-					}
-					break;
-				}
-				case Email:
-				{
-					if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(ThisCopy.GetID(), TO_RUST_STRING(OTP))
-							.AssignResult(Error, true))
-					{
-						SuccessDelegate.Execute();
-						return;
-					}
-					break;
-				}
-				default:
-					return;
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Wallet, OTP, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  switch (ThisCopy.GetSource())
+		                  {
+		                  case Phone:
+			                  {
+				                  if (Thirdweb::ecosystem_wallet_link_account(
+						                  ThisCopy.GetID(), Wallet.GetID(), TO_RUST_STRING(OTP), nullptr,
+						                  nullptr, nullptr, nullptr, nullptr, nullptr)
+					                  .AssignResult(Error, true))
+				                  {
+					                  SuccessDelegate.Execute();
+					                  return;
+				                  }
+				                  break;
+			                  }
+		                  case Email:
+			                  {
+				                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(
+						                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
+					                  .AssignResult(Error, true))
+				                  {
+					                  SuccessDelegate.Execute();
+					                  return;
+				                  }
+				                  break;
+			                  }
+		                  default:
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 bool FInAppWalletHandle::FetchOAuthLoginURL(const FString& RedirectUrl, FString& LoginLink, FString& Error)
@@ -422,7 +453,8 @@ bool FInAppWalletHandle::FetchOAuthLoginURL(const FString& RedirectUrl, FString&
 	FInAppWalletHandle ThisCopy = *this;
 	if (UThirdwebRuntimeSettings::IsEcosystem())
 	{
-		if (Thirdweb::ecosystem_wallet_fetch_oauth_login_link(ThisCopy.GetID(), TO_RUST_STRING(RedirectUrl)).AssignResult(Error))
+		if (Thirdweb::ecosystem_wallet_fetch_oauth_login_link(ThisCopy.GetID(), TO_RUST_STRING(RedirectUrl)).
+			AssignResult(Error))
 		{
 			LoginLink = Error;
 			Error.Empty();
@@ -431,7 +463,8 @@ bool FInAppWalletHandle::FetchOAuthLoginURL(const FString& RedirectUrl, FString&
 	}
 	else
 	{
-		if (Thirdweb::ecosystem_wallet_fetch_oauth_login_link(ThisCopy.GetID(), TO_RUST_STRING(RedirectUrl)).AssignResult(Error))
+		if (Thirdweb::ecosystem_wallet_fetch_oauth_login_link(ThisCopy.GetID(), TO_RUST_STRING(RedirectUrl)).
+			AssignResult(Error))
 		{
 			LoginLink = Error;
 			Error.Empty();
@@ -454,58 +487,63 @@ void FInAppWalletHandle::SignInWithOAuth(
 		ErrorDelegate.Execute(TEXT("Empty Auth Result"));
 		return;
 	}
-	FString			   Result = ThirdwebUtils::ParseAuthResult(AuthResult);
+	FString Result = ThirdwebUtils::ParseAuthResult(AuthResult);
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Result, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (UThirdwebRuntimeSettings::IsEcosystem())
-			{
-				TW_LOG(VeryVerbose, TEXT("FInAppWalletHandle::SignInWithOAuth::Task::%s"), *Result)
-				if (Thirdweb::ecosystem_wallet_sign_in_with_oauth(ThisCopy.GetID(), TO_RUST_STRING(Result))
-						.AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			else
-			{
-				if (Thirdweb::ecosystem_wallet_sign_in_with_oauth(ThisCopy.GetID(), TO_RUST_STRING(Result))
-						.AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Result, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (UThirdwebRuntimeSettings::IsEcosystem())
+		                  {
+			                  TW_LOG(VeryVerbose, TEXT("FInAppWalletHandle::SignInWithOAuth::Task::%s"), *Result)
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_oauth(
+					                  ThisCopy.GetID(), TO_RUST_STRING(Result))
+				                  .AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  else
+		                  {
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_oauth(
+					                  ThisCopy.GetID(), TO_RUST_STRING(Result))
+				                  .AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::LinkOAuth(const FInAppWalletHandle& Wallet, const FString& AuthResult,
-	const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+                                   const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
 	CHECK_ECOSYSTEM(ErrorDelegate)
 	CHECK_WALLET_SOURCE(Wallet, OAuthProvider, ErrorDelegate)
 
-	FString			   Result = ThirdwebUtils::ParseAuthResult(AuthResult);
+	FString Result = ThirdwebUtils::ParseAuthResult(AuthResult);
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Wallet, Result, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (Thirdweb::ecosystem_wallet_link_account(
-					ThisCopy.GetID(), Wallet.GetID(), nullptr, TO_RUST_STRING(Result), nullptr, nullptr, nullptr, nullptr, nullptr)
-					.AssignResult(Error, true))
-			{
-				SuccessDelegate.Execute();
-				return;
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Wallet, Result, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (Thirdweb::ecosystem_wallet_link_account(
+				                  ThisCopy.GetID(), Wallet.GetID(), nullptr, TO_RUST_STRING(Result), nullptr, nullptr,
+				                  nullptr, nullptr, nullptr)
+			                  .AssignResult(Error, true))
+		                  {
+			                  SuccessDelegate.Execute();
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::SignInWithJwt(
@@ -517,37 +555,41 @@ void FInAppWalletHandle::SignInWithJwt(
 
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Jwt, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (UThirdwebRuntimeSettings::IsEcosystem())
-			{
-				if (Thirdweb::ecosystem_wallet_sign_in_with_jwt(ThisCopy.GetID(), TO_RUST_STRING(Jwt)).AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			else
-			{
-				if (UThirdwebRuntimeSettings::GetEncryptionKey().IsEmpty())
-				{
-					ErrorDelegate.Execute(TEXT("No encryption key set"));
-					return;
-				}
-				if (Thirdweb::ecosystem_wallet_sign_in_with_jwt(ThisCopy.GetID(), TO_RUST_STRING(Jwt)).AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Jwt, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (UThirdwebRuntimeSettings::IsEcosystem())
+		                  {
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_jwt(ThisCopy.GetID(), TO_RUST_STRING(Jwt)).
+				                  AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  else
+		                  {
+			                  if (UThirdwebRuntimeSettings::GetEncryptionKey().IsEmpty())
+			                  {
+				                  ErrorDelegate.Execute(TEXT("No encryption key set"));
+				                  return;
+			                  }
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_jwt(ThisCopy.GetID(), TO_RUST_STRING(Jwt)).
+				                  AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
-void FInAppWalletHandle::LinkJwt(const FInAppWalletHandle& Wallet, const FString& Jwt, const FStreamableDelegate& SuccessDelegate,
-	const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::LinkJwt(const FInAppWalletHandle& Wallet, const FString& Jwt,
+                                 const FStreamableDelegate& SuccessDelegate,
+                                 const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -556,17 +598,19 @@ void FInAppWalletHandle::LinkJwt(const FInAppWalletHandle& Wallet, const FString
 
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Wallet, Jwt, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (Thirdweb::ecosystem_wallet_link_account(
-					ThisCopy.GetID(), Wallet.GetID(), nullptr, nullptr, TO_RUST_STRING(Jwt), nullptr, nullptr, nullptr, nullptr)
-					.AssignResult(Error, true))
-			{
-				SuccessDelegate.Execute();
-				return;
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Wallet, Jwt, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (Thirdweb::ecosystem_wallet_link_account(
+				                  ThisCopy.GetID(), Wallet.GetID(), nullptr, nullptr, TO_RUST_STRING(Jwt), nullptr,
+				                  nullptr, nullptr, nullptr)
+			                  .AssignResult(Error, true))
+		                  {
+			                  SuccessDelegate.Execute();
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::SignInWithAuthEndpoint(
@@ -578,39 +622,43 @@ void FInAppWalletHandle::SignInWithAuthEndpoint(
 
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Payload, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (UThirdwebRuntimeSettings::IsEcosystem())
-			{
-				if (Thirdweb::ecosystem_wallet_sign_in_with_auth_endpoint(ThisCopy.GetID(), TO_RUST_STRING(Payload))
-						.AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			else
-			{
-				if (UThirdwebRuntimeSettings::GetEncryptionKey().IsEmpty())
-				{
-					ErrorDelegate.Execute(TEXT("No encryption key set"));
-					return;
-				}
-				if (Thirdweb::ecosystem_wallet_sign_in_with_auth_endpoint(ThisCopy.GetID(), TO_RUST_STRING(Payload))
-						.AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Payload, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (UThirdwebRuntimeSettings::IsEcosystem())
+		                  {
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_auth_endpoint(
+					                  ThisCopy.GetID(), TO_RUST_STRING(Payload))
+				                  .AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  else
+		                  {
+			                  if (UThirdwebRuntimeSettings::GetEncryptionKey().IsEmpty())
+			                  {
+				                  ErrorDelegate.Execute(TEXT("No encryption key set"));
+				                  return;
+			                  }
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_auth_endpoint(
+					                  ThisCopy.GetID(), TO_RUST_STRING(Payload))
+				                  .AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::LinkAuthEndpoint(const FInAppWalletHandle& Wallet, const FString& Payload,
-	const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+                                          const FStreamableDelegate& SuccessDelegate,
+                                          const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -619,20 +667,23 @@ void FInAppWalletHandle::LinkAuthEndpoint(const FInAppWalletHandle& Wallet, cons
 
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Wallet, Payload, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (Thirdweb::ecosystem_wallet_link_account(
-					ThisCopy.GetID(), Wallet.GetID(), nullptr, nullptr, nullptr, TO_RUST_STRING(Payload), nullptr, nullptr, nullptr)
-					.AssignResult(Error, true))
-			{
-				SuccessDelegate.Execute();
-				return;
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Wallet, Payload, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (Thirdweb::ecosystem_wallet_link_account(
+				                  ThisCopy.GetID(), Wallet.GetID(), nullptr, nullptr, nullptr, TO_RUST_STRING(Payload),
+				                  nullptr, nullptr, nullptr)
+			                  .AssignResult(Error, true))
+		                  {
+			                  SuccessDelegate.Execute();
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
-void FInAppWalletHandle::SignInWithGuest(const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::SignInWithGuest(const FStreamableDelegate& SuccessDelegate,
+                                         const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -640,30 +691,33 @@ void FInAppWalletHandle::SignInWithGuest(const FStreamableDelegate& SuccessDeleg
 
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (UThirdwebRuntimeSettings::IsEcosystem())
-			{
-				if (Thirdweb::ecosystem_wallet_sign_in_with_guest(ThisCopy.GetID(), TO_RUST_STRING(FPlatformMisc::GetLoginId()))
-						.AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			else
-			{
-				if (Thirdweb::ecosystem_wallet_sign_in_with_guest(ThisCopy.GetID(), TO_RUST_STRING(FPlatformMisc::GetLoginId()))
-						.AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (UThirdwebRuntimeSettings::IsEcosystem())
+		                  {
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_guest(
+					                  ThisCopy.GetID(), TO_RUST_STRING(FPlatformMisc::GetLoginId()))
+				                  .AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  else
+		                  {
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_guest(
+					                  ThisCopy.GetID(), TO_RUST_STRING(FPlatformMisc::GetLoginId()))
+				                  .AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::LinkGuest(
@@ -676,21 +730,25 @@ void FInAppWalletHandle::LinkGuest(
 
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Wallet, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(), Wallet.GetID(), nullptr, nullptr, nullptr, nullptr,
-					TO_RUST_STRING(FPlatformMisc::GetLoginId()), nullptr, nullptr)
-					.AssignResult(Error, true))
-			{
-				SuccessDelegate.Execute();
-				return;
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Wallet, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(), Wallet.GetID(), nullptr,
+		                                                              nullptr, nullptr, nullptr,
+		                                                              TO_RUST_STRING(FPlatformMisc::GetLoginId()),
+		                                                              nullptr, nullptr)
+			                  .AssignResult(Error, true))
+		                  {
+			                  SuccessDelegate.Execute();
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::SignInWithEthereum(const FString& Payload, const FString& Signature,
-	const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+                                            const FStreamableDelegate& SuccessDelegate,
+                                            const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -698,40 +756,41 @@ void FInAppWalletHandle::SignInWithEthereum(const FString& Payload, const FStrin
 
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Payload, Signature, SuccessDelegate, ErrorDelegate] {
-			UE_LOG(LogTemp, VeryVerbose,
-				TEXT("FInAppWalletHandle::SignInWithEthereum::Task::WalletHandle=%"
-					 "lld | Signature=%s | Payload=%s"),
-				ThisCopy.GetID(), *Signature, *Payload);
-			FString Error;
-			if (UThirdwebRuntimeSettings::IsEcosystem())
-			{
-				if (Thirdweb::ecosystem_wallet_sign_in_with_siwe(
-						ThisCopy.GetID(), TO_RUST_STRING(Payload), TO_RUST_STRING(Signature))
-						.AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			else
-			{
-				if (Thirdweb::ecosystem_wallet_sign_in_with_siwe(
-						ThisCopy.GetID(), TO_RUST_STRING(Payload), TO_RUST_STRING(Signature))
-						.AssignResult(Error, true))
-				{
-					ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
-					SuccessDelegate.Execute();
-					return;
-				}
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Payload, Signature, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  UE_LOG(LogTemp, VeryVerbose,
+		                         TEXT("FInAppWalletHandle::SignInWithEthereum::Task::WalletHandle=%"
+			                         "lld | Signature=%s | Payload=%s"),
+		                         ThisCopy.GetID(), *Signature, *Payload);
+		                  FString Error;
+		                  if (UThirdwebRuntimeSettings::IsEcosystem())
+		                  {
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_siwe(
+					                  ThisCopy.GetID(), TO_RUST_STRING(Payload), TO_RUST_STRING(Signature))
+				                  .AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  else
+		                  {
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_siwe(
+					                  ThisCopy.GetID(), TO_RUST_STRING(Payload), TO_RUST_STRING(Signature))
+				                  .AssignResult(Error, true))
+			                  {
+				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
+				                  SuccessDelegate.Execute();
+				                  return;
+			                  }
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
 void FInAppWalletHandle::LinkSiwe(const FInAppWalletHandle& Wallet, const FString& Payload, const FString& Signature,
-	const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+                                  const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -740,20 +799,24 @@ void FInAppWalletHandle::LinkSiwe(const FInAppWalletHandle& Wallet, const FStrin
 
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, Wallet, Payload, Signature, SuccessDelegate, ErrorDelegate] {
-			FString Error;
-			if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(), Wallet.GetID(), nullptr, nullptr, nullptr, nullptr,
-					nullptr, TO_RUST_STRING(Signature), TO_RUST_STRING(Payload))
-					.AssignResult(Error, true))
-			{
-				SuccessDelegate.Execute();
-				return;
-			}
-			ErrorDelegate.Execute(Error);
-		});
+	                  [ThisCopy, Wallet, Payload, Signature, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Error;
+		                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(), Wallet.GetID(), nullptr,
+		                                                              nullptr, nullptr, nullptr,
+		                                                              nullptr, TO_RUST_STRING(Signature),
+		                                                              TO_RUST_STRING(Payload))
+			                  .AssignResult(Error, true))
+		                  {
+			                  SuccessDelegate.Execute();
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Error);
+	                  });
 }
 
-void FInAppWalletHandle::GetLinkedAccounts(const FGetLinkedAccountsDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::GetLinkedAccounts(const FGetLinkedAccountsDelegate& SuccessDelegate,
+                                           const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -761,32 +824,36 @@ void FInAppWalletHandle::GetLinkedAccounts(const FGetLinkedAccountsDelegate& Suc
 
 	FInAppWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
-		[ThisCopy, SuccessDelegate, ErrorDelegate] {
-			FString Output;
-			if (Thirdweb::ecosystem_wallet_get_linked_accounts(ThisCopy.GetID()).AssignResult(Output))
-			{
-				TArray<FThirdwebLinkedAccount> LinkedAccounts;
-				TArray<TSharedPtr<FJsonValue>> JsonValueArray = ThirdwebUtils::Json::ToJsonArray(Output);
-				for (int i = 0; i < JsonValueArray.Num(); i++)
-				{
-					if (JsonValueArray[i]->Type == EJson::Object)
-					{
-						LinkedAccounts.Emplace(FThirdwebLinkedAccount::FromJson(JsonValueArray[i]->AsObject()));
-					}
-				}
-				SuccessDelegate.Execute(LinkedAccounts);
-				return;
-			}
-			ErrorDelegate.Execute(Output);
-		});
+	                  [ThisCopy, SuccessDelegate, ErrorDelegate]
+	                  {
+		                  FString Output;
+		                  if (Thirdweb::ecosystem_wallet_get_linked_accounts(ThisCopy.GetID()).AssignResult(Output))
+		                  {
+			                  TArray<FThirdwebLinkedAccount> LinkedAccounts;
+			                  TArray<TSharedPtr<FJsonValue>> JsonValueArray = ThirdwebUtils::Json::ToJsonArray(Output);
+			                  for (int i = 0; i < JsonValueArray.Num(); i++)
+			                  {
+				                  if (JsonValueArray[i]->Type == EJson::Object)
+				                  {
+					                  LinkedAccounts.Emplace(
+						                  FThirdwebLinkedAccount::FromJson(JsonValueArray[i]->AsObject()));
+				                  }
+			                  }
+			                  SuccessDelegate.Execute(LinkedAccounts);
+			                  return;
+		                  }
+		                  ErrorDelegate.Execute(Output);
+	                  });
 }
 
 FString FInAppWalletHandle::GetDisplayName() const
 {
-	return IsValid() ? FString::Printf(TEXT("%sWallet::%s::%lld"), GetTypeString(),
-						   Source == OAuthProvider
-							   ? *FString::Printf(TEXT("%s::%s"), GetSourceString(), *ThirdwebUtils::ToString(Provider))
-							   : GetSourceString(),
-						   ID)
-					 : TEXT("InAppWallet::INVALID");
+	return IsValid()
+		       ? FString::Printf(TEXT("%sWallet::%s::%lld"), GetTypeString(),
+		                         Source == OAuthProvider
+			                         ? *FString::Printf(TEXT("%s::%s"), GetSourceString(),
+			                                            *ThirdwebUtils::ToString(Provider))
+			                         : GetSourceString(),
+		                         ID)
+		       : TEXT("InAppWallet::INVALID");
 }
