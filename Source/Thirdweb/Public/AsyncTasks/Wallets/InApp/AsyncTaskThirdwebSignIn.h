@@ -5,14 +5,17 @@
 #include "AsyncTasks/Wallets/InApp/AsyncTaskThirdwebInAppBase.h"
 #include "AsyncTaskThirdwebSignIn.generated.h"
 
-UCLASS(Abstract)
+UCLASS(meta=(HasDedicatedAsyncNode))
 class THIRDWEB_API UAsyncTaskThirdwebSignIn : public UAsyncTaskThirdwebInAppBase
 {
 	GENERATED_BODY()
 
 public:
 	/** Multi-Purpose runtime sign-in node covering all sign in options based upon Wallet. Input is ignored if guest wallet */
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), DisplayName="Sign In", Category="Thirdweb|Wallets|In App")
+	UFUNCTION(BlueprintCallable,
+		meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"),
+		DisplayName="Sign In",
+		Category="Thirdweb|Wallets|In App")
 	static UAsyncTaskThirdwebSignIn* SignIn(UObject* WorldContextObject, const FInAppWalletHandle& Wallet, const FString& Input, const FString& Signature);
 
 	UPROPERTY(BlueprintAssignable)
@@ -20,11 +23,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FErrorOnlyDelegate Failed;
-	
+
 protected:
 	UPROPERTY(Transient)
 	FString AuthInput;
-	
+
 	UPROPERTY(Transient)
 	FString SignatureInput;
 

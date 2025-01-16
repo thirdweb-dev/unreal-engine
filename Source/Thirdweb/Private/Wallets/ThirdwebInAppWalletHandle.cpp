@@ -84,8 +84,7 @@ bool FInAppWalletHandle::IsValid() const
 	return Super::IsValid() && Source != InvalidSource;
 }
 
-void FInAppWalletHandle::CreateEmailWallet(
-	const FString& Email, const FCreateInAppWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::CreateEmailWallet(const FString& Email, const FCreateInAppWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 
@@ -94,13 +93,16 @@ void FInAppWalletHandle::CreateEmailWallet(
 	                  {
 		                  FString Error;
 		                  if (Thirdweb::create_ecosystem_wallet(
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr,
-				                  TO_RUST_STRING(Email), nullptr,
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()), nullptr, nullptr)
-			                  .AssignResult(Error))
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()),
+			                  nullptr,
+			                  TO_RUST_STRING(Email),
+			                  nullptr,
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
+			                  nullptr,
+			                  nullptr).AssignResult(Error))
 		                  {
 			                  SuccessDelegate.Execute(FInAppWalletHandle(EInAppSource::Email, Error));
 			                  return;
@@ -109,9 +111,9 @@ void FInAppWalletHandle::CreateEmailWallet(
 	                  });
 }
 
-void FInAppWalletHandle::CreateOAuthWallet(
-	const EThirdwebOAuthProvider Provider, const FCreateInAppWalletDelegate& SuccessDelegate,
-	const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::CreateOAuthWallet(const EThirdwebOAuthProvider Provider,
+                                           const FCreateInAppWalletDelegate& SuccessDelegate,
+                                           const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
@@ -119,25 +121,28 @@ void FInAppWalletHandle::CreateOAuthWallet(
 	                  {
 		                  FString Error;
 		                  if (UThirdwebRuntimeSettings::IsEcosystem())
+		                  {
 			                  if (Thirdweb::create_ecosystem_wallet(
-					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr,
-					                  nullptr,
-					                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
-					                  TO_RUST_STRING(ThirdwebUtils::ToString(Provider)), nullptr)
-				                  .AssignResult(Error))
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()),
+				                  nullptr,
+				                  nullptr,
+				                  nullptr,
+				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
+				                  TO_RUST_STRING(ThirdwebUtils::ToString(Provider)),
+				                  nullptr).AssignResult(Error))
 			                  {
 				                  SuccessDelegate.Execute(FInAppWalletHandle(Provider, Error));
 				                  return;
 			                  }
+		                  }
 		                  ErrorDelegate.Execute(Error);
 	                  });
 }
 
-void FInAppWalletHandle::CreatePhoneWallet(
-	const FString& Phone, const FCreateInAppWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::CreatePhoneWallet(const FString& Phone, const FCreateInAppWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
@@ -146,13 +151,16 @@ void FInAppWalletHandle::CreatePhoneWallet(
 		                  FString Error;
 
 		                  if (Thirdweb::create_ecosystem_wallet(
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr,
-				                  TO_RUST_STRING(Phone),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()), nullptr, nullptr)
-			                  .AssignResult(Error))
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()),
+			                  nullptr,
+			                  nullptr,
+			                  TO_RUST_STRING(Phone),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
+			                  nullptr,
+			                  nullptr).AssignResult(Error))
 		                  {
 			                  SuccessDelegate.Execute(FInAppWalletHandle(EInAppSource::Phone, Error));
 			                  return;
@@ -162,8 +170,7 @@ void FInAppWalletHandle::CreatePhoneWallet(
 	                  });
 }
 
-void FInAppWalletHandle::CreateSiweWallet(const FCreateInAppWalletDelegate& SuccessDelegate,
-                                          const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::CreateSiweWallet(const FCreateInAppWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
@@ -173,13 +180,16 @@ void FInAppWalletHandle::CreateSiweWallet(const FCreateInAppWalletDelegate& Succ
 		                  FString Error;
 
 		                  if (Thirdweb::create_ecosystem_wallet(
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr, nullptr,
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
-				                  TO_RUST_STRING(Provider), nullptr)
-			                  .AssignResult(Error))
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()),
+			                  nullptr,
+			                  nullptr,
+			                  nullptr,
+			                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
+			                  TO_RUST_STRING(Provider),
+			                  nullptr).AssignResult(Error))
 		                  {
 			                  SuccessDelegate.Execute(FInAppWalletHandle(Siwe, Error));
 			                  return;
@@ -188,8 +198,9 @@ void FInAppWalletHandle::CreateSiweWallet(const FCreateInAppWalletDelegate& Succ
 	                  });
 }
 
-void FInAppWalletHandle::CreateCustomAuthWallet(
-	const EInAppSource Source, const FCreateInAppWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::CreateCustomAuthWallet(const EInAppSource Source,
+                                                const FCreateInAppWalletDelegate& SuccessDelegate,
+                                                const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	if (Source != Jwt && Source != AuthEndpoint && Source != Guest)
@@ -204,17 +215,17 @@ void FInAppWalletHandle::CreateCustomAuthWallet(
 	                  [Source, SuccessDelegate, ErrorDelegate]
 	                  {
 		                  FString Error;
-		                  if (Thirdweb::create_ecosystem_wallet(
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()), nullptr, nullptr, nullptr,
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
-				                  TO_RUST_STRING(FString(GetSourceString(Source))),
-				                  TO_RUST_STRING(UThirdwebRuntimeSettings::GetEncryptionKey())
-				                  // legacy, will be used if migrating only
-			                  )
-			                  .AssignResult(Error))
+		                  if (Thirdweb::create_ecosystem_wallet(TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
+		                                                        TO_RUST_STRING(UThirdwebRuntimeSettings::GetPartnerId()),
+		                                                        TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
+		                                                        TO_RUST_STRING(UThirdwebRuntimeSettings::GetBundleId()),
+		                                                        nullptr,
+		                                                        nullptr,
+		                                                        nullptr,
+		                                                        TO_RUST_STRING(UThirdwebRuntimeSettings::GetStorageDirectory()),
+		                                                        TO_RUST_STRING(FString(GetSourceString(Source))),
+		                                                        // legacy, will be used if migrating only
+		                                                        TO_RUST_STRING(UThirdwebRuntimeSettings::GetEncryptionKey())).AssignResult(Error))
 		                  {
 			                  SuccessDelegate.Execute(FInAppWalletHandle(Source, Error));
 			                  return;
@@ -248,8 +259,7 @@ void FInAppWalletHandle::SendOTP(const FStreamableDelegate& SuccessDelegate, con
 			                  {
 			                  case Phone:
 				                  {
-					                  if (Thirdweb::ecosystem_wallet_send_otp_phone(ThisCopy.GetID()).AssignResult(
-						                  Error, true))
+					                  if (Thirdweb::ecosystem_wallet_send_otp_phone(ThisCopy.GetID()).AssignResult(Error, true))
 					                  {
 						                  SuccessDelegate.Execute();
 						                  return;
@@ -258,8 +268,7 @@ void FInAppWalletHandle::SendOTP(const FStreamableDelegate& SuccessDelegate, con
 				                  }
 			                  case Email:
 				                  {
-					                  if (Thirdweb::ecosystem_wallet_send_otp_email(ThisCopy.GetID()).AssignResult(
-						                  Error, true))
+					                  if (Thirdweb::ecosystem_wallet_send_otp_email(ThisCopy.GetID()).AssignResult(Error, true))
 					                  {
 						                  SuccessDelegate.Execute();
 						                  return;
@@ -279,8 +288,7 @@ void FInAppWalletHandle::SendOTP(const FStreamableDelegate& SuccessDelegate, con
 			                  {
 			                  case Phone:
 				                  {
-					                  if (Thirdweb::ecosystem_wallet_send_otp_phone(ThisCopy.GetID()).AssignResult(
-						                  Error, true))
+					                  if (Thirdweb::ecosystem_wallet_send_otp_phone(ThisCopy.GetID()).AssignResult(Error, true))
 					                  {
 						                  SuccessDelegate.Execute();
 						                  return;
@@ -289,8 +297,7 @@ void FInAppWalletHandle::SendOTP(const FStreamableDelegate& SuccessDelegate, con
 				                  }
 			                  case Email:
 				                  {
-					                  if (Thirdweb::ecosystem_wallet_send_otp_email(ThisCopy.GetID()).AssignResult(
-						                  Error, true))
+					                  if (Thirdweb::ecosystem_wallet_send_otp_email(ThisCopy.GetID()).AssignResult(Error, true))
 					                  {
 						                  SuccessDelegate.Execute();
 						                  return;
@@ -308,8 +315,7 @@ void FInAppWalletHandle::SendOTP(const FStreamableDelegate& SuccessDelegate, con
 	                  });
 }
 
-void FInAppWalletHandle::SignInWithOTP(
-	const FString& OTP, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::SignInWithOTP(const FString& OTP, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -329,9 +335,7 @@ void FInAppWalletHandle::SignInWithOTP(
 			                  {
 			                  case Phone:
 				                  {
-					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_phone(
-							                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
-						                  .AssignResult(Error, true))
+					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_phone(ThisCopy.GetID(), TO_RUST_STRING(OTP)).AssignResult(Error, true))
 					                  {
 						                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 						                  SuccessDelegate.Execute();
@@ -341,9 +345,7 @@ void FInAppWalletHandle::SignInWithOTP(
 				                  }
 			                  case Email:
 				                  {
-					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(
-							                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
-						                  .AssignResult(Error, true))
+					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(ThisCopy.GetID(), TO_RUST_STRING(OTP)).AssignResult(Error, true))
 					                  {
 						                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 						                  SuccessDelegate.Execute();
@@ -361,9 +363,7 @@ void FInAppWalletHandle::SignInWithOTP(
 			                  {
 			                  case Phone:
 				                  {
-					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_phone(
-							                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
-						                  .AssignResult(Error, true))
+					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_phone(ThisCopy.GetID(), TO_RUST_STRING(OTP)).AssignResult(Error, true))
 					                  {
 						                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 						                  SuccessDelegate.Execute();
@@ -372,9 +372,7 @@ void FInAppWalletHandle::SignInWithOTP(
 				                  }
 			                  case Email:
 				                  {
-					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(
-							                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
-						                  .AssignResult(Error, true))
+					                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(ThisCopy.GetID(), TO_RUST_STRING(OTP)).AssignResult(Error, true))
 					                  {
 						                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 						                  SuccessDelegate.Execute();
@@ -389,7 +387,8 @@ void FInAppWalletHandle::SignInWithOTP(
 	                  });
 }
 
-void FInAppWalletHandle::LinkOTP(const FInAppWalletHandle& Wallet, const FString& OTP,
+void FInAppWalletHandle::LinkOTP(const FInAppWalletHandle& Wallet,
+                                 const FString& OTP,
                                  const FStreamableDelegate& SuccessDelegate,
                                  const FStringDelegate& ErrorDelegate)
 {
@@ -410,10 +409,15 @@ void FInAppWalletHandle::LinkOTP(const FInAppWalletHandle& Wallet, const FString
 		                  {
 		                  case Phone:
 			                  {
-				                  if (Thirdweb::ecosystem_wallet_link_account(
-						                  ThisCopy.GetID(), Wallet.GetID(), TO_RUST_STRING(OTP), nullptr,
-						                  nullptr, nullptr, nullptr, nullptr, nullptr)
-					                  .AssignResult(Error, true))
+				                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(),
+				                                                              Wallet.GetID(),
+				                                                              TO_RUST_STRING(OTP),
+				                                                              nullptr,
+				                                                              nullptr,
+				                                                              nullptr,
+				                                                              nullptr,
+				                                                              nullptr,
+				                                                              nullptr).AssignResult(Error, true))
 				                  {
 					                  SuccessDelegate.Execute();
 					                  return;
@@ -422,9 +426,7 @@ void FInAppWalletHandle::LinkOTP(const FInAppWalletHandle& Wallet, const FString
 			                  }
 		                  case Email:
 			                  {
-				                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(
-						                  ThisCopy.GetID(), TO_RUST_STRING(OTP))
-					                  .AssignResult(Error, true))
+				                  if (Thirdweb::ecosystem_wallet_sign_in_with_otp_email(ThisCopy.GetID(), TO_RUST_STRING(OTP)).AssignResult(Error, true))
 				                  {
 					                  SuccessDelegate.Execute();
 					                  return;
@@ -453,8 +455,7 @@ bool FInAppWalletHandle::FetchOAuthLoginURL(const FString& RedirectUrl, FString&
 	FInAppWalletHandle ThisCopy = *this;
 	if (UThirdwebRuntimeSettings::IsEcosystem())
 	{
-		if (Thirdweb::ecosystem_wallet_fetch_oauth_login_link(ThisCopy.GetID(), TO_RUST_STRING(RedirectUrl)).
-			AssignResult(Error))
+		if (Thirdweb::ecosystem_wallet_fetch_oauth_login_link(ThisCopy.GetID(), TO_RUST_STRING(RedirectUrl)).AssignResult(Error))
 		{
 			LoginLink = Error;
 			Error.Empty();
@@ -463,8 +464,7 @@ bool FInAppWalletHandle::FetchOAuthLoginURL(const FString& RedirectUrl, FString&
 	}
 	else
 	{
-		if (Thirdweb::ecosystem_wallet_fetch_oauth_login_link(ThisCopy.GetID(), TO_RUST_STRING(RedirectUrl)).
-			AssignResult(Error))
+		if (Thirdweb::ecosystem_wallet_fetch_oauth_login_link(ThisCopy.GetID(), TO_RUST_STRING(RedirectUrl)).AssignResult(Error))
 		{
 			LoginLink = Error;
 			Error.Empty();
@@ -475,8 +475,7 @@ bool FInAppWalletHandle::FetchOAuthLoginURL(const FString& RedirectUrl, FString&
 	return false;
 }
 
-void FInAppWalletHandle::SignInWithOAuth(
-	const FString& AuthResult, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::SignInWithOAuth(const FString& AuthResult, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -496,9 +495,7 @@ void FInAppWalletHandle::SignInWithOAuth(
 		                  if (UThirdwebRuntimeSettings::IsEcosystem())
 		                  {
 			                  TW_LOG(VeryVerbose, TEXT("FInAppWalletHandle::SignInWithOAuth::Task::%s"), *Result)
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_oauth(
-					                  ThisCopy.GetID(), TO_RUST_STRING(Result))
-				                  .AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_oauth(ThisCopy.GetID(), TO_RUST_STRING(Result)).AssignResult(Error, true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -507,9 +504,7 @@ void FInAppWalletHandle::SignInWithOAuth(
 		                  }
 		                  else
 		                  {
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_oauth(
-					                  ThisCopy.GetID(), TO_RUST_STRING(Result))
-				                  .AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_oauth(ThisCopy.GetID(), TO_RUST_STRING(Result)).AssignResult(Error, true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -520,8 +515,10 @@ void FInAppWalletHandle::SignInWithOAuth(
 	                  });
 }
 
-void FInAppWalletHandle::LinkOAuth(const FInAppWalletHandle& Wallet, const FString& AuthResult,
-                                   const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::LinkOAuth(const FInAppWalletHandle& Wallet,
+                                   const FString& AuthResult,
+                                   const FStreamableDelegate& SuccessDelegate,
+                                   const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -534,10 +531,15 @@ void FInAppWalletHandle::LinkOAuth(const FInAppWalletHandle& Wallet, const FStri
 	                  [ThisCopy, Wallet, Result, SuccessDelegate, ErrorDelegate]
 	                  {
 		                  FString Error;
-		                  if (Thirdweb::ecosystem_wallet_link_account(
-				                  ThisCopy.GetID(), Wallet.GetID(), nullptr, TO_RUST_STRING(Result), nullptr, nullptr,
-				                  nullptr, nullptr, nullptr)
-			                  .AssignResult(Error, true))
+		                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(),
+		                                                              Wallet.GetID(),
+		                                                              nullptr,
+		                                                              TO_RUST_STRING(Result),
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr).AssignResult(Error, true))
 		                  {
 			                  SuccessDelegate.Execute();
 			                  return;
@@ -546,8 +548,7 @@ void FInAppWalletHandle::LinkOAuth(const FInAppWalletHandle& Wallet, const FStri
 	                  });
 }
 
-void FInAppWalletHandle::SignInWithJwt(
-	const FString& Jwt, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::SignInWithJwt(const FString& Jwt, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -560,8 +561,7 @@ void FInAppWalletHandle::SignInWithJwt(
 		                  FString Error;
 		                  if (UThirdwebRuntimeSettings::IsEcosystem())
 		                  {
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_jwt(ThisCopy.GetID(), TO_RUST_STRING(Jwt)).
-				                  AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_jwt(ThisCopy.GetID(), TO_RUST_STRING(Jwt)).AssignResult(Error, true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -575,8 +575,7 @@ void FInAppWalletHandle::SignInWithJwt(
 				                  ErrorDelegate.Execute(TEXT("No encryption key set"));
 				                  return;
 			                  }
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_jwt(ThisCopy.GetID(), TO_RUST_STRING(Jwt)).
-				                  AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_jwt(ThisCopy.GetID(), TO_RUST_STRING(Jwt)).AssignResult(Error, true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -587,7 +586,8 @@ void FInAppWalletHandle::SignInWithJwt(
 	                  });
 }
 
-void FInAppWalletHandle::LinkJwt(const FInAppWalletHandle& Wallet, const FString& Jwt,
+void FInAppWalletHandle::LinkJwt(const FInAppWalletHandle& Wallet,
+                                 const FString& Jwt,
                                  const FStreamableDelegate& SuccessDelegate,
                                  const FStringDelegate& ErrorDelegate)
 {
@@ -601,10 +601,15 @@ void FInAppWalletHandle::LinkJwt(const FInAppWalletHandle& Wallet, const FString
 	                  [ThisCopy, Wallet, Jwt, SuccessDelegate, ErrorDelegate]
 	                  {
 		                  FString Error;
-		                  if (Thirdweb::ecosystem_wallet_link_account(
-				                  ThisCopy.GetID(), Wallet.GetID(), nullptr, nullptr, TO_RUST_STRING(Jwt), nullptr,
-				                  nullptr, nullptr, nullptr)
-			                  .AssignResult(Error, true))
+		                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(),
+		                                                              Wallet.GetID(),
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              TO_RUST_STRING(Jwt),
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr).AssignResult(Error, true))
 		                  {
 			                  SuccessDelegate.Execute();
 			                  return;
@@ -613,8 +618,7 @@ void FInAppWalletHandle::LinkJwt(const FInAppWalletHandle& Wallet, const FString
 	                  });
 }
 
-void FInAppWalletHandle::SignInWithAuthEndpoint(
-	const FString& Payload, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::SignInWithAuthEndpoint(const FString& Payload, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -627,9 +631,7 @@ void FInAppWalletHandle::SignInWithAuthEndpoint(
 		                  FString Error;
 		                  if (UThirdwebRuntimeSettings::IsEcosystem())
 		                  {
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_auth_endpoint(
-					                  ThisCopy.GetID(), TO_RUST_STRING(Payload))
-				                  .AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_auth_endpoint(ThisCopy.GetID(), TO_RUST_STRING(Payload)).AssignResult(Error, true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -643,9 +645,7 @@ void FInAppWalletHandle::SignInWithAuthEndpoint(
 				                  ErrorDelegate.Execute(TEXT("No encryption key set"));
 				                  return;
 			                  }
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_auth_endpoint(
-					                  ThisCopy.GetID(), TO_RUST_STRING(Payload))
-				                  .AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_auth_endpoint(ThisCopy.GetID(), TO_RUST_STRING(Payload)).AssignResult(Error, true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -656,7 +656,8 @@ void FInAppWalletHandle::SignInWithAuthEndpoint(
 	                  });
 }
 
-void FInAppWalletHandle::LinkAuthEndpoint(const FInAppWalletHandle& Wallet, const FString& Payload,
+void FInAppWalletHandle::LinkAuthEndpoint(const FInAppWalletHandle& Wallet,
+                                          const FString& Payload,
                                           const FStreamableDelegate& SuccessDelegate,
                                           const FStringDelegate& ErrorDelegate)
 {
@@ -670,10 +671,15 @@ void FInAppWalletHandle::LinkAuthEndpoint(const FInAppWalletHandle& Wallet, cons
 	                  [ThisCopy, Wallet, Payload, SuccessDelegate, ErrorDelegate]
 	                  {
 		                  FString Error;
-		                  if (Thirdweb::ecosystem_wallet_link_account(
-				                  ThisCopy.GetID(), Wallet.GetID(), nullptr, nullptr, nullptr, TO_RUST_STRING(Payload),
-				                  nullptr, nullptr, nullptr)
-			                  .AssignResult(Error, true))
+		                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(),
+		                                                              Wallet.GetID(),
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              TO_RUST_STRING(Payload),
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr).AssignResult(Error, true))
 		                  {
 			                  SuccessDelegate.Execute();
 			                  return;
@@ -682,8 +688,7 @@ void FInAppWalletHandle::LinkAuthEndpoint(const FInAppWalletHandle& Wallet, cons
 	                  });
 }
 
-void FInAppWalletHandle::SignInWithGuest(const FStreamableDelegate& SuccessDelegate,
-                                         const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::SignInWithGuest(const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -696,9 +701,9 @@ void FInAppWalletHandle::SignInWithGuest(const FStreamableDelegate& SuccessDeleg
 		                  FString Error;
 		                  if (UThirdwebRuntimeSettings::IsEcosystem())
 		                  {
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_guest(
-					                  ThisCopy.GetID(), TO_RUST_STRING(FPlatformMisc::GetLoginId()))
-				                  .AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_guest(ThisCopy.GetID(), TO_RUST_STRING(FPlatformMisc::GetLoginId())).AssignResult(
+				                  Error,
+				                  true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -707,9 +712,9 @@ void FInAppWalletHandle::SignInWithGuest(const FStreamableDelegate& SuccessDeleg
 		                  }
 		                  else
 		                  {
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_guest(
-					                  ThisCopy.GetID(), TO_RUST_STRING(FPlatformMisc::GetLoginId()))
-				                  .AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_guest(ThisCopy.GetID(), TO_RUST_STRING(FPlatformMisc::GetLoginId())).AssignResult(
+				                  Error,
+				                  true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -720,8 +725,7 @@ void FInAppWalletHandle::SignInWithGuest(const FStreamableDelegate& SuccessDeleg
 	                  });
 }
 
-void FInAppWalletHandle::LinkGuest(
-	const FInAppWalletHandle& Wallet, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::LinkGuest(const FInAppWalletHandle& Wallet, const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -733,11 +737,15 @@ void FInAppWalletHandle::LinkGuest(
 	                  [ThisCopy, Wallet, SuccessDelegate, ErrorDelegate]
 	                  {
 		                  FString Error;
-		                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(), Wallet.GetID(), nullptr,
-		                                                              nullptr, nullptr, nullptr,
+		                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(),
+		                                                              Wallet.GetID(),
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr,
 		                                                              TO_RUST_STRING(FPlatformMisc::GetLoginId()),
-		                                                              nullptr, nullptr)
-			                  .AssignResult(Error, true))
+		                                                              nullptr,
+		                                                              nullptr).AssignResult(Error, true))
 		                  {
 			                  SuccessDelegate.Execute();
 			                  return;
@@ -746,7 +754,8 @@ void FInAppWalletHandle::LinkGuest(
 	                  });
 }
 
-void FInAppWalletHandle::SignInWithEthereum(const FString& Payload, const FString& Signature,
+void FInAppWalletHandle::SignInWithEthereum(const FString& Payload,
+                                            const FString& Signature,
                                             const FStreamableDelegate& SuccessDelegate,
                                             const FStringDelegate& ErrorDelegate)
 {
@@ -758,16 +767,17 @@ void FInAppWalletHandle::SignInWithEthereum(const FString& Payload, const FStrin
 	UE::Tasks::Launch(UE_SOURCE_LOCATION,
 	                  [ThisCopy, Payload, Signature, SuccessDelegate, ErrorDelegate]
 	                  {
-		                  UE_LOG(LogTemp, VeryVerbose,
-		                         TEXT("FInAppWalletHandle::SignInWithEthereum::Task::WalletHandle=%"
-			                         "lld | Signature=%s | Payload=%s"),
-		                         ThisCopy.GetID(), *Signature, *Payload);
+		                  UE_LOG(LogTemp,
+		                         VeryVerbose,
+		                         TEXT("FInAppWalletHandle::SignInWithEthereum::Task::WalletHandle=%" "lld | Signature=%s | Payload=%s"),
+		                         ThisCopy.GetID(),
+		                         *Signature,
+		                         *Payload);
 		                  FString Error;
 		                  if (UThirdwebRuntimeSettings::IsEcosystem())
 		                  {
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_siwe(
-					                  ThisCopy.GetID(), TO_RUST_STRING(Payload), TO_RUST_STRING(Signature))
-				                  .AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_siwe(ThisCopy.GetID(), TO_RUST_STRING(Payload), TO_RUST_STRING(Signature)).
+				                  AssignResult(Error, true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -776,9 +786,8 @@ void FInAppWalletHandle::SignInWithEthereum(const FString& Payload, const FStrin
 		                  }
 		                  else
 		                  {
-			                  if (Thirdweb::ecosystem_wallet_sign_in_with_siwe(
-					                  ThisCopy.GetID(), TO_RUST_STRING(Payload), TO_RUST_STRING(Signature))
-				                  .AssignResult(Error, true))
+			                  if (Thirdweb::ecosystem_wallet_sign_in_with_siwe(ThisCopy.GetID(), TO_RUST_STRING(Payload), TO_RUST_STRING(Signature)).
+				                  AssignResult(Error, true))
 			                  {
 				                  ThirdwebUtils::Internal::SendConnectEvent(ThisCopy);
 				                  SuccessDelegate.Execute();
@@ -789,8 +798,11 @@ void FInAppWalletHandle::SignInWithEthereum(const FString& Payload, const FStrin
 	                  });
 }
 
-void FInAppWalletHandle::LinkSiwe(const FInAppWalletHandle& Wallet, const FString& Payload, const FString& Signature,
-                                  const FStreamableDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::LinkSiwe(const FInAppWalletHandle& Wallet,
+                                  const FString& Payload,
+                                  const FString& Signature,
+                                  const FStreamableDelegate& SuccessDelegate,
+                                  const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -802,11 +814,15 @@ void FInAppWalletHandle::LinkSiwe(const FInAppWalletHandle& Wallet, const FStrin
 	                  [ThisCopy, Wallet, Payload, Signature, SuccessDelegate, ErrorDelegate]
 	                  {
 		                  FString Error;
-		                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(), Wallet.GetID(), nullptr,
-		                                                              nullptr, nullptr, nullptr,
-		                                                              nullptr, TO_RUST_STRING(Signature),
-		                                                              TO_RUST_STRING(Payload))
-			                  .AssignResult(Error, true))
+		                  if (Thirdweb::ecosystem_wallet_link_account(ThisCopy.GetID(),
+		                                                              Wallet.GetID(),
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              nullptr,
+		                                                              TO_RUST_STRING(Signature),
+		                                                              TO_RUST_STRING(Payload)).AssignResult(Error, true))
 		                  {
 			                  SuccessDelegate.Execute();
 			                  return;
@@ -815,8 +831,7 @@ void FInAppWalletHandle::LinkSiwe(const FInAppWalletHandle& Wallet, const FStrin
 	                  });
 }
 
-void FInAppWalletHandle::GetLinkedAccounts(const FGetLinkedAccountsDelegate& SuccessDelegate,
-                                           const FStringDelegate& ErrorDelegate)
+void FInAppWalletHandle::GetLinkedAccounts(const FGetLinkedAccountsDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	CHECK_VALIDITY(ErrorDelegate)
@@ -835,8 +850,7 @@ void FInAppWalletHandle::GetLinkedAccounts(const FGetLinkedAccountsDelegate& Suc
 			                  {
 				                  if (JsonValueArray[i]->Type == EJson::Object)
 				                  {
-					                  LinkedAccounts.Emplace(
-						                  FThirdwebLinkedAccount::FromJson(JsonValueArray[i]->AsObject()));
+					                  LinkedAccounts.Emplace(FThirdwebLinkedAccount::FromJson(JsonValueArray[i]->AsObject()));
 				                  }
 			                  }
 			                  SuccessDelegate.Execute(LinkedAccounts);
@@ -849,10 +863,10 @@ void FInAppWalletHandle::GetLinkedAccounts(const FGetLinkedAccountsDelegate& Suc
 FString FInAppWalletHandle::GetDisplayName() const
 {
 	return IsValid()
-		       ? FString::Printf(TEXT("%sWallet::%s::%lld"), GetTypeString(),
+		       ? FString::Printf(TEXT("%sWallet::%s::%lld"),
+		                         GetTypeString(),
 		                         Source == OAuthProvider
-			                         ? *FString::Printf(TEXT("%s::%s"), GetSourceString(),
-			                                            *ThirdwebUtils::ToString(Provider))
+			                         ? *FString::Printf(TEXT("%s::%s"), GetSourceString(), *ThirdwebUtils::ToString(Provider))
 			                         : GetSourceString(),
 		                         ID)
 		       : TEXT("InAppWallet::INVALID");

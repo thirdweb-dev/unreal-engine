@@ -5,7 +5,8 @@
 #include "AsyncTaskThirdwebInAppCreateWalletBase.h"
 #include "AsyncTaskThirdwebCreateEmailWallet.generated.h"
 
-UCLASS(Abstract)
+UCLASS(meta=(HasDedicatedAsyncNode))
+
 class THIRDWEB_API UAsyncTaskThirdwebCreateEmailWallet : public UAsyncTaskThirdwebInAppCreateWalletBase
 {
 	GENERATED_BODY()

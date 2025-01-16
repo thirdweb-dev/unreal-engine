@@ -8,7 +8,7 @@
 
 struct FSmartWalletHandle;
 
-UCLASS(Abstract)
+UCLASS(meta=(HasDedicatedAsyncNode))
 class THIRDWEB_API UAsyncTaskThirdwebCreateSmartWallet : public UAsyncTaskThirdwebBase
 {
 	GENERATED_BODY()
@@ -17,14 +17,12 @@ public:
 	virtual void Activate() override;
 
 	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AdvancedDisplay="Factory,AccountOverride"), Category="Thirdweb|Wallets|Smart")
-	static UAsyncTaskThirdwebCreateSmartWallet* CreateSmartWallet(
-		UObject* WorldContextObject,
-		const FInAppWalletHandle& InAppWallet,
-		const int64 ChainID,
-		const bool bGasless = true,
-		const FString& Factory = "",
-		const FString& AccountOverride = ""
-	)
+	static UAsyncTaskThirdwebCreateSmartWallet* CreateSmartWallet(UObject* WorldContextObject,
+	                                                              const FInAppWalletHandle& InAppWallet,
+	                                                              const int64 ChainID,
+	                                                              const bool bGasless = true,
+	                                                              const FString& Factory = "",
+	                                                              const FString& AccountOverride = "")
 	{
 		NEW_TASK
 		Task->InAppWallet = InAppWallet;
