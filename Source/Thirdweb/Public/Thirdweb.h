@@ -3,16 +3,16 @@
 // ReSharper disable CppUE4CodingStandardNamingViolationWarning,CppUE4CodingStandardNamingViolationWarning
 #pragma once
 
-#include "Containers/StringConv.h"
-#include "Containers/UnrealString.h"
-#include "HAL/Platform.h"
-#include "ThirdwebMacros.h"
-
 #include <cstdarg>
 #include <cstdint>
 #include <cstdlib>
 #include <new>
 #include <ostream>
+
+#include "ThirdwebMacros.h"
+#include "Containers/StringConv.h"
+#include "Containers/UnrealString.h"
+#include "HAL/Platform.h"
 
 namespace Thirdweb
 {

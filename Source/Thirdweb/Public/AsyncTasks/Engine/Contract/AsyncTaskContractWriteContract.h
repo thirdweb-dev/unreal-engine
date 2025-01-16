@@ -16,27 +16,31 @@ class THIRDWEB_API UAsyncTaskContractWriteContract : public UAsyncTaskThirdwebBa
 
 public:
 	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="Thirdweb|Engine|Contract")
-	static UAsyncTaskContractWriteContract* WriteContract(UObject* WorldContextObject,
-	                                                      const int64 ChainId,
-	                                                      const FString& ContractAddress,
-	                                                      const FString& BackendWalletAddress,
-	                                                      const FSmartWalletHandle& SmartWallet,
-	                                                      const FString& IdempotencyKey,
-	                                                      const FString& FunctionName,
-	                                                      const TArray<FString>& Args,
-	                                                      const FThirdwebEngineTransactionOverrides& TxOverrides,
-	                                                      const FString& Abi,
-	                                                      const bool bSimulateTx);
+	static UAsyncTaskContractWriteContract* WriteContract(
+		UObject* WorldContextObject,
+		const int64 ChainId,
+		const FString& ContractAddress,
+		const FString& BackendWalletAddress,
+		const FSmartWalletHandle& SmartWallet,
+		const FString& IdempotencyKey,
+		const FString& FunctionName,
+		const TArray<FString>& Args,
+		const FThirdwebEngineTransactionOverrides& TxOverrides,
+		const FString& Abi,
+		const bool bSimulateTx
+	);
 
 	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="Thirdweb|Engine|Contract")
-	static UAsyncTaskContractWriteContract* WriteContractRaw(UObject* WorldContextObject,
-	                                                         const int64 ChainId,
-	                                                         const FString& ContractAddress,
-	                                                         const FString& BackendWalletAddress,
-	                                                         const FSmartWalletHandle& SmartWallet,
-	                                                         const FString& IdempotencyKey,
-	                                                         const FJsonObjectWrapper& Data,
-	                                                         const bool bSimulateTx);
+	static UAsyncTaskContractWriteContract* WriteContractRaw(
+		UObject* WorldContextObject,
+		const int64 ChainId,
+		const FString& ContractAddress,
+		const FString& BackendWalletAddress,
+		const FSmartWalletHandle& SmartWallet,
+		const FString& IdempotencyKey,
+		const FJsonObjectWrapper& Data,
+		const bool bSimulateTx
+	);
 
 	virtual void Activate() override;
 
