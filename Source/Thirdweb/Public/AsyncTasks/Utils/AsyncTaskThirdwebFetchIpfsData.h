@@ -31,13 +31,16 @@ protected:
 /**
  *
  */
-UCLASS(Abstract)
+UCLASS(meta=(HasDedicatedAsyncNode))
 class THIRDWEB_API UAsyncTaskThirdwebFetchIpfsRaw : public UAsyncTaskThirdwebFetchIpfsBase
 {
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, DisplayName="Fetch IPFS Raw", meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AutoCreateRefTerm="Args"), Category="Thirdweb|Utils")
+	UFUNCTION(BlueprintCallable,
+		DisplayName="Fetch IPFS Raw",
+		meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AutoCreateRefTerm="Args"),
+		Category="Thirdweb|Utils")
 	static UAsyncTaskThirdwebFetchIpfsRaw* FetchIpfsRaw(UObject* WorldContextObject, const FString& Uri)
 	{
 		NEW_TASK
@@ -57,13 +60,16 @@ public:
 	virtual void HandleFailed(const FString& Error) override;
 };
 
-UCLASS(Abstract)
+UCLASS(meta=(HasDedicatedAsyncNode))
 class THIRDWEB_API UAsyncTaskThirdwebFetchIpfsImage : public UAsyncTaskThirdwebFetchIpfsBase
 {
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, DisplayName="Fetch IPFS Image", meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AutoCreateRefTerm="Args"), Category="Thirdweb|Utils")
+	UFUNCTION(BlueprintCallable,
+		DisplayName="Fetch IPFS Image",
+		meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AutoCreateRefTerm="Args"),
+		Category="Thirdweb|Utils")
 	static UAsyncTaskThirdwebFetchIpfsImage* FetchIpfsImage(UObject* WorldContextObject, const FString& Uri)
 	{
 		NEW_TASK
@@ -83,13 +89,16 @@ public:
 	virtual void HandleFailed(const FString& Error) override;
 };
 
-UCLASS(Abstract)
+UCLASS(meta=(HasDedicatedAsyncNode))
 class THIRDWEB_API UAsyncTaskThirdwebFetchIpfsJson : public UAsyncTaskThirdwebFetchIpfsBase
 {
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, DisplayName="Fetch IPFS Image", meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AutoCreateRefTerm="Args"), Category="Thirdweb|Utils")
+	UFUNCTION(BlueprintCallable,
+		DisplayName="Fetch IPFS Image",
+		meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AutoCreateRefTerm="Args"),
+		Category="Thirdweb|Utils")
 	static UAsyncTaskThirdwebFetchIpfsJson* FetchIpfsJson(UObject* WorldContextObject, const FString& Uri)
 	{
 		NEW_TASK

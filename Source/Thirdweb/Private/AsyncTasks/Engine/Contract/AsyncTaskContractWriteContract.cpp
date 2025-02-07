@@ -20,7 +20,8 @@ UAsyncTaskContractWriteContract* UAsyncTaskContractWriteContract::WriteContract(
 	const TArray<FString>& Args,
 	const FThirdwebEngineTransactionOverrides& TxOverrides,
 	const FString& Abi,
-	const bool bSimulateTx)
+	const bool bSimulateTx
+)
 {
 	FJsonObjectWrapper JsonObjectWrapper = FJsonObjectWrapper();
 	JsonObjectWrapper.JsonObject->SetStringField(TEXT("functionName"), FunctionName.TrimStartAndEnd());

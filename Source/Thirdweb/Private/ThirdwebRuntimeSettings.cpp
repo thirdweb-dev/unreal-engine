@@ -209,7 +209,10 @@ FString UThirdwebRuntimeSettings::GetEcosystemId()
 {
 	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
-		return Settings->EcosystemId.TrimStartAndEnd();
+		if (FString ID = Settings->EcosystemId.TrimStartAndEnd(); ID.StartsWith(TEXT("ecosystem.")))
+		{
+			return ID;
+		}
 	}
 	return TEXT("");
 }

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "Kismet/BlueprintAsyncActionBase.h"
-
 #include "AsyncTaskThirdwebBase.generated.h"
 
 #define NEW_TASK \

@@ -16,7 +16,7 @@ namespace TwPins
 	const FName Args = FName(TEXT("Args"));
 	const FName TxOverrides = FName(TEXT("TxOverrides"));
 	const FName Abi = FName(TEXT("Abi"));
-	const FName SimulateTx = FName(TEXT("SimulateTx"));
+	const FName SimulateTx = FName(TEXT("bSimulateTx"));
 	const FName QueueId = FName(TEXT("QueueId"));
 }
 
@@ -115,7 +115,7 @@ void UK2Node_ContractWriteContract::AllocateDefaultPins()
 
 void UK2Node_ContractWriteContract::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)
 {
-	if (const UEdGraphPin* Pin = GetWalletPin())
+	if (const UEdGraphPin* Pin = GetSmartWalletPin())
 	{
 		if (bRaw)
 		{

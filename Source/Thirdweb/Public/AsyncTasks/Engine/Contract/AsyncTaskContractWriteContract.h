@@ -9,7 +9,7 @@
 
 struct FJsonObjectWrapper;
 
-UCLASS(Abstract)
+UCLASS(meta=(HasDedicatedAsyncNode))
 class THIRDWEB_API UAsyncTaskContractWriteContract : public UAsyncTaskThirdwebBase
 {
 	GENERATED_BODY()
@@ -41,7 +41,7 @@ public:
 		const FJsonObjectWrapper& Data,
 		const bool bSimulateTx
 	);
-	
+
 	virtual void Activate() override;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWriteContractDelegate, const FString&, QueueId, const FString&, Error);
@@ -52,8 +52,6 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FWriteContractDelegate Failed;
 
-
-	
 protected:
 	UPROPERTY(Transient)
 	int64 ChainId;
@@ -69,10 +67,10 @@ protected:
 
 	UPROPERTY(Transient)
 	FString IdempotencyKey;
-	
+
 	UPROPERTY(Transient)
 	bool bSimulateTx;
-	
+
 	TSharedPtr<FJsonObject> Data;
 
 private:
