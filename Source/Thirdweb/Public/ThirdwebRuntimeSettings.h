@@ -86,6 +86,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Thirdweb|Settings")
 	static TArray<FString> GetEngineSigners();
 
+	UFUNCTION(BlueprintPure, meta=(ReturnDisplayName="Signer"), Category="Thirdweb|Settings")
+	static FString UseEngineSigner(UPARAM(meta=(GetOptions="GetEngineSigners")) FString Address) { return Address; }
+
 	/** Gets the first engine signer in the array, if any */
 	UFUNCTION(BlueprintPure, Category = "Thirdweb|Settings", meta = (ReturnDisplayName = "Signer"))
 	static FString GetEngineSigner();
