@@ -23,7 +23,7 @@ TSharedRef<SWidget> UThirdwebOAuthBrowserUserWidget::RebuildWidget()
 	// RebuildWidget is not called until the widget is first added to the
 	// viewport.
 
-	UPanelWidget *RootWidget = Cast<UPanelWidget>(GetRootWidget());
+	UPanelWidget* RootWidget = Cast<UPanelWidget>(GetRootWidget());
 
 	// Construct root widget if needed
 	if (!RootWidget)
@@ -76,7 +76,7 @@ FString UThirdwebOAuthBrowserUserWidget::GetDummyUrl()
 #endif
 }
 
-void UThirdwebOAuthBrowserUserWidget::Authenticate(const FInAppWalletHandle &InAppWallet)
+void UThirdwebOAuthBrowserUserWidget::Authenticate(const FInAppWalletHandle& InAppWallet)
 {
 	// Validate Wallet
 	if (!InAppWallet.IsValid())
@@ -118,7 +118,7 @@ void UThirdwebOAuthBrowserUserWidget::Authenticate(const FInAppWalletHandle &InA
 	return ExternalBrowser->Authenticate(Link);
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleUrlChanged(const FString &Url)
+void UThirdwebOAuthBrowserUserWidget::HandleUrlChanged(const FString& Url)
 {
 	TW_LOG(Verbose, TEXT("OAuthBrowserUserWidget::HandleUrlChanged::%s"), *Url);
 	if (Url.IsEmpty() || (Url.StartsWith(BackendUrlPrefix) && !Url.StartsWith(BackendUrlPrefix + TEXT("sdk/oauth"))))
@@ -138,7 +138,7 @@ void UThirdwebOAuthBrowserUserWidget::HandleUrlChanged(const FString &Url)
 	bShouldBeVisible = true;
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandlePageLoaded(const FString &Url)
+void UThirdwebOAuthBrowserUserWidget::HandlePageLoaded(const FString& Url)
 {
 	if (bShouldBeVisible)
 	{
@@ -146,22 +146,22 @@ void UThirdwebOAuthBrowserUserWidget::HandlePageLoaded(const FString &Url)
 	}
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleOnBeforePopup(const FString &Url, const FString &Frame)
+void UThirdwebOAuthBrowserUserWidget::HandleOnBeforePopup(const FString& Url, const FString& Frame)
 {
 	return OnPopup.Broadcast(Url, Frame);
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleAuthenticated(const FString &AuthResult)
+void UThirdwebOAuthBrowserUserWidget::HandleAuthenticated(const FString& AuthResult)
 {
 	OnAuthenticated.Broadcast(AuthResult);
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleSiweComplete(const FString &Signature, const FString &Payload)
+void UThirdwebOAuthBrowserUserWidget::HandleSiweComplete(const FString& Signature, const FString& Payload)
 {
 	OnSiweComplete.Broadcast(Signature, Payload);
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleError(const FString &Error)
+void UThirdwebOAuthBrowserUserWidget::HandleError(const FString& Error)
 {
 	OnError.Broadcast(Error);
 }

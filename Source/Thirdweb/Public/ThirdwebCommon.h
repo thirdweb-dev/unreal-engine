@@ -43,8 +43,7 @@ enum class EThirdwebOAuthProvider : uint8
 	Coinbase UMETA(DisplayName = "Coinbase"),
 	Twitch UMETA(DisplayName = "Twitch"),
 	Github UMETA(DisplayName = "Github"),
-	None UMETA(Hidden)
-};
+	None UMETA(Hidden)};
 
 UENUM(BlueprintType, DisplayName = "OTP Method")
 enum class EThirdwebOTPMethod : uint8

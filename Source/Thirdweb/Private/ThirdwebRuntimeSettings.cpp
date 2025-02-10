@@ -21,7 +21,7 @@ UThirdwebRuntimeSettings::UThirdwebRuntimeSettings()
 }
 
 #if WITH_EDITOR
-void UThirdwebRuntimeSettings::PostEditChangeProperty(struct FPropertyChangedEvent &PropertyChangedEvent)
+void UThirdwebRuntimeSettings::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 
@@ -33,7 +33,8 @@ void UThirdwebRuntimeSettings::PostEditChangeProperty(struct FPropertyChangedEve
 		GET_MEMBER_NAME_CHECKED(UThirdwebRuntimeSettings, PartnerId),
 		GET_MEMBER_NAME_CHECKED(UThirdwebRuntimeSettings, EngineBaseUrl),
 		GET_MEMBER_NAME_CHECKED(UThirdwebRuntimeSettings, EngineAccessToken),
-		GET_MEMBER_NAME_CHECKED(UThirdwebRuntimeSettings, CustomAppUri)};
+		GET_MEMBER_NAME_CHECKED(UThirdwebRuntimeSettings, CustomAppUri)
+	};
 
 	bool bChanged = false;
 	// ReSharper disable once CppTooWideScopeInitStatement
@@ -85,7 +86,7 @@ void UThirdwebRuntimeSettings::PostEditChangeProperty(struct FPropertyChangedEve
 	}
 }
 
-bool UThirdwebRuntimeSettings::CanEditChange(const FProperty *InProperty) const
+bool UThirdwebRuntimeSettings::CanEditChange(const FProperty* InProperty) const
 {
 	if (!Super::CanEditChange(InProperty))
 	{
@@ -102,6 +103,7 @@ bool UThirdwebRuntimeSettings::CanEditChange(const FProperty *InProperty) const
 }
 #endif
 
+
 void UThirdwebRuntimeSettings::GenerateEncryptionKey()
 {
 #if WITH_EDITOR
@@ -115,7 +117,7 @@ void UThirdwebRuntimeSettings::GenerateEncryptionKey()
 
 TArray<FString> UThirdwebRuntimeSettings::GetEngineSigners()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		return Settings->EngineSigners;
 	}
@@ -124,7 +126,7 @@ TArray<FString> UThirdwebRuntimeSettings::GetEngineSigners()
 
 FString UThirdwebRuntimeSettings::GetEngineSigner()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		if (Settings->EngineSigners.Num() > 0)
 		{
@@ -136,7 +138,7 @@ FString UThirdwebRuntimeSettings::GetEngineSigner()
 
 FString UThirdwebRuntimeSettings::GetExternalAuthRedirectUri()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		if (Settings->bOverrideExternalAuthRedirectUri && !Settings->CustomExternalAuthRedirectUri.IsEmpty())
 		{
@@ -148,7 +150,7 @@ FString UThirdwebRuntimeSettings::GetExternalAuthRedirectUri()
 
 FString UThirdwebRuntimeSettings::GetEncryptionKey()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		return Settings->EncryptionKey;
 	}
@@ -157,14 +159,16 @@ FString UThirdwebRuntimeSettings::GetEncryptionKey()
 
 FString UThirdwebRuntimeSettings::GetStorageDirectory()
 {
-	FString StorageDir = FPaths::Combine(IFileManager::Get().ConvertToAbsolutePathForExternalAppForWrite(*FPaths::ProjectSavedDir()), "Thirdweb", "InAppWallet");
+	FString StorageDir = FPaths::Combine(IFileManager::Get().ConvertToAbsolutePathForExternalAppForWrite(*FPaths::ProjectSavedDir()),
+	                                     "Thirdweb",
+	                                     "InAppWallet");
 	TW_LOG(Verbose, TEXT("StorageDir::%s"), *StorageDir);
 	return StorageDir;
 }
 
 FString UThirdwebRuntimeSettings::GetEcosystemId()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		return Settings->EcosystemId.TrimStartAndEnd();
 	}
@@ -188,7 +192,7 @@ bool UThirdwebRuntimeSettings::IsEcosystem()
 
 FString UThirdwebRuntimeSettings::GetClientId()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		return Settings->ClientId.TrimStartAndEnd();
 	}
@@ -197,7 +201,7 @@ FString UThirdwebRuntimeSettings::GetClientId()
 
 FString UThirdwebRuntimeSettings::GetBundleId()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		return Settings->BundleId.TrimStartAndEnd();
 	}
@@ -206,7 +210,7 @@ FString UThirdwebRuntimeSettings::GetBundleId()
 
 bool UThirdwebRuntimeSettings::AnalyticsEnabled()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		return Settings->bSendAnalytics;
 	}
@@ -215,7 +219,7 @@ bool UThirdwebRuntimeSettings::AnalyticsEnabled()
 
 FString UThirdwebRuntimeSettings::GetEngineBaseUrl()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		FString Url = Settings->EngineBaseUrl.TrimStartAndEnd();
 		return Url.EndsWith("/") ? Url.LeftChop(1) : Url;
@@ -225,7 +229,7 @@ FString UThirdwebRuntimeSettings::GetEngineBaseUrl()
 
 FString UThirdwebRuntimeSettings::GetEngineAccessToken()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		return Settings->EngineAccessToken.TrimStartAndEnd();
 	}
@@ -234,7 +238,7 @@ FString UThirdwebRuntimeSettings::GetEngineAccessToken()
 
 FString UThirdwebRuntimeSettings::GetAppUri()
 {
-	if (const UThirdwebRuntimeSettings *Settings = Get())
+	if (const UThirdwebRuntimeSettings* Settings = Get())
 	{
 		if (Settings->bOverrideAppUri)
 		{
@@ -248,21 +252,30 @@ FString UThirdwebRuntimeSettings::GetAppUri()
 void UThirdwebRuntimeSettings::FetchEngineSigners()
 {
 #if WITH_EDITOR
-	ThirdwebEngine::BackendWallet::FGetAllDelegate SuccessDelegate = ThirdwebEngine::BackendWallet::FGetAllDelegate::CreateWeakLambda(this, [this](const TArray<FThirdwebBackendWallet> &BackendWallets)
-																																	  {
-		TArray<FString> Addresses;
-		for (const FThirdwebBackendWallet& BackendWallet : BackendWallets)
+	ThirdwebEngine::BackendWallet::FGetAllDelegate SuccessDelegate = ThirdwebEngine::BackendWallet::FGetAllDelegate::CreateWeakLambda(this,
+		[this](const TArray<FThirdwebBackendWallet>& BackendWallets)
 		{
-			Addresses.Emplace(BackendWallet.Address);
-		}
+			TArray<FString> Addresses;
+			for (const FThirdwebBackendWallet& BackendWallet : BackendWallets)
+			{
+				Addresses.Emplace(BackendWallet.Address);
+			}
 
-		EngineSigners = Addresses;
-		if (MarkPackageDirty())
-		{
-			PostEditChange();
-		} });
-	FStringDelegate ErrorDelegate = FStringDelegate::CreateWeakLambda(this, [](const FString &ErrorMessage)
-																	  { TW_LOG(Error, TEXT("UThirdwebRuntimeSettings::FetchEngineSigners::Failed to fetch engine signers::Error=%s"), *ErrorMessage); });
+			EngineSigners = Addresses;
+			if (MarkPackageDirty())
+			{
+				PostEditChange();
+			}
+		});
+	FStringDelegate ErrorDelegate = FStringDelegate::CreateWeakLambda(this,
+	                                                                  [](const FString& ErrorMessage)
+	                                                                  {
+		                                                                  TW_LOG(Error,
+		                                                                         TEXT(
+			                                                                         "UThirdwebRuntimeSettings::FetchEngineSigners::Failed to fetch engine signers::Error=%s"
+		                                                                         ),
+		                                                                         *ErrorMessage);
+	                                                                  });
 	ThirdwebEngine::BackendWallet::GetAll(this, 1, 10, SuccessDelegate, ErrorDelegate);
 #endif
 }

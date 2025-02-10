@@ -13,18 +13,22 @@ class THIRDWEB_API UThirdwebOAuthBrowserUserWidget : public UUserWidget
 
 public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAuthenticatedDelegate, const FString &, AuthResult);
+
 	UPROPERTY(BlueprintAssignable, Category = "Thirdweb|OAuth Browser")
 	FOnAuthenticatedDelegate OnAuthenticated;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSiweCompleteDelegate, const FString &, Signature, const FString &, Payload);
+
 	UPROPERTY(BlueprintAssignable, Category = "Thirdweb|OAuth Browser")
 	FOnSiweCompleteDelegate OnSiweComplete;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnErrorDelegate, const FString &, Error);
+
 	UPROPERTY(BlueprintAssignable, Category = "Thirdweb|OAuth Browser")
 	FOnErrorDelegate OnError;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FUrlDelegate, const FString &, URL);
+
 	UPROPERTY(BlueprintAssignable, DisplayName = "On URL Changed", Category = "Thirdweb|OAuth Browser")
 	FUrlDelegate OnUrlChanged;
 
@@ -32,6 +36,7 @@ public:
 	FUrlDelegate OnPageLoaded;
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPopupDelegate, const FString &, URL, const FString &, Frame);
+
 	UPROPERTY(BlueprintAssignable, Category = "Thirdweb|OAuth Browser")
 	FPopupDelegate OnPopup;
 
@@ -49,7 +54,7 @@ protected:
 
 private:
 	UPROPERTY(Transient)
-	class UThirdwebOAuthExternalBrowser *ExternalBrowser = nullptr;
+	class UThirdwebOAuthExternalBrowser* ExternalBrowser = nullptr;
 
 	static const FString BackendUrlPrefix;
 	static const FString DummyUrl;
@@ -67,13 +72,13 @@ public:
 protected:
 	void SetVisible(const bool bVisible);
 	virtual FString GetDummyUrl();
-	virtual void HandleUrlChanged(const FString &Url);
-	virtual void HandlePageLoaded(const FString &Url);
-	virtual void HandleOnBeforePopup(const FString &Url, const FString &Frame);
+	virtual void HandleUrlChanged(const FString& Url);
+	virtual void HandlePageLoaded(const FString& Url);
+	virtual void HandleOnBeforePopup(const FString& Url, const FString& Frame);
 
-	virtual void HandleAuthenticated(const FString &AuthResult);
-	virtual void HandleSiweComplete(const FString &Signature, const FString &Payload);
-	virtual void HandleError(const FString &Error);
+	virtual void HandleAuthenticated(const FString& AuthResult);
+	virtual void HandleSiweComplete(const FString& Signature, const FString& Payload);
+	virtual void HandleError(const FString& Error);
 
 public:
 #if PLATFORM_ANDROID
@@ -82,5 +87,5 @@ public:
 #endif
 
 	UFUNCTION(BlueprintCallable, Category = "Thirdweb|OAuth Browser")
-	void Authenticate(const FInAppWalletHandle &InAppWallet);
+	void Authenticate(const FInAppWalletHandle& InAppWallet);
 };

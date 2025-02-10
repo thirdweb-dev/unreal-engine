@@ -21,8 +21,8 @@ public:
 	UThirdwebRuntimeSettings();
 
 #if WITH_EDITOR
-	virtual void PostEditChangeProperty(struct FPropertyChangedEvent &PropertyChangedEvent) override;
-	virtual bool CanEditChange(const FProperty *InProperty) const override;
+	virtual void PostEditChangeProperty(struct FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
 #endif
 
 protected:
@@ -63,11 +63,19 @@ protected:
 	bool bSendAnalytics;
 
 	/** Edit Condition for overriding Custom Application Schema */
-	UPROPERTY(Config, EditAnywhere, DisplayName = "Override App URI", meta = (InlineEditConditionToggle, ConfigHierarchyEditable), Category = "Advanced|Wallets")
+	UPROPERTY(Config,
+		EditAnywhere,
+		DisplayName = "Override App URI",
+		meta = (InlineEditConditionToggle, ConfigHierarchyEditable),
+		Category = "Advanced|Wallets")
 	bool bOverrideAppUri;
 
 	/** Custom Application URI for oauth redirects. default is {bundleId}://{clientId} */
-	UPROPERTY(Config, EditAnywhere, DisplayName = "Custom App URI", meta = (EditCondition = "bOverrideAppUri", ConfigHierarchyEditable), Category = "Advanced|Wallets")
+	UPROPERTY(Config,
+		EditAnywhere,
+		DisplayName = "Custom App URI",
+		meta = (EditCondition = "bOverrideAppUri", ConfigHierarchyEditable),
+		Category = "Advanced|Wallets")
 	FString CustomAppUri;
 
 	/** Edit Condition for overriding the final page shown after auth is complete */
@@ -75,10 +83,13 @@ protected:
 	bool bOverrideExternalAuthRedirectUri;
 
 	/** Custom URI shown after external auth is complete */
-	UPROPERTY(Config, EditAnywhere, DisplayName = "Custom External Auth Redirect URI", meta = (EditCondition = "bOverrideExternalAuthRedirectUri", ConfigHierarchyEditable), Category = "Advanced|Wallets")
+	UPROPERTY(Config,
+		EditAnywhere,
+		DisplayName = "Custom External Auth Redirect URI",
+		meta = (EditCondition = "bOverrideExternalAuthRedirectUri", ConfigHierarchyEditable),
+		Category = "Advanced|Wallets")
 	FString CustomExternalAuthRedirectUri;
 
-private:
 public:
 	// UFUNCTION(CallInEditor, Category="Wallets|InApp")
 	void GenerateEncryptionKey();
@@ -134,7 +145,7 @@ public:
 
 	/** Convenience Getter */
 	UFUNCTION(BlueprintPure, DisplayName = "Get Thirdweb Runtime Settings", meta = (ReturnDisplayName = "Settings"), Category = "Thirdweb|Settings")
-	static const UThirdwebRuntimeSettings *Get() { return GetDefault<UThirdwebRuntimeSettings>(); }
+	static const UThirdwebRuntimeSettings* Get() { return GetDefault<UThirdwebRuntimeSettings>(); }
 
 protected:
 	// UFUNCTION(CallInEditor, Category="Wallets|Smart")
