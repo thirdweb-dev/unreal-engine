@@ -1,12 +1,12 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
 #include "AsyncTasks/Engine/Marketplace/AsyncTaskMarketplaceGetBase.h"
+#include "Engine/Marketplace/EnglishAuctions/ThirdwebMarketplaceEnglishAuction.h"
 #include "AsyncTaskEnglishAuctionsGet.generated.h"
 
 class UThirdwebMarketplace;
-struct FThirdwebMarketplaceEnglishAuction;
 /**
  * 
  */

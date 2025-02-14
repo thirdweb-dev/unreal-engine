@@ -1,8 +1,13 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
-class IHttpRequest;
+#include "Containers/Array.h"
+#include "Containers/Map.h"
+#include "Containers/UnrealString.h"
+#include "Interfaces/IHttpRequest.h"
+#include "Templates/SharedPointer.h"
+#include "Templates/Tuple.h"
 
 class FThirdwebHeaders
 {

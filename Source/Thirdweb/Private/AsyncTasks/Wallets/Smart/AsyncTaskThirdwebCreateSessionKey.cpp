@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #include "AsyncTasks/Wallets/Smart/AsyncTaskThirdwebCreateSessionKey.h"
 
@@ -17,12 +17,14 @@ void UAsyncTaskThirdwebCreateSessionKey::Activate()
 	);
 }
 
-UAsyncTaskThirdwebCreateSessionKey* UAsyncTaskThirdwebCreateSessionKey::CreateSessionKey(UObject* WorldContextObject,
-                                                                                         const FSmartWalletHandle& Wallet,
-                                                                                         const FString& Signer,
-                                                                                         const TArray<FString>& ApprovedTargets,
-                                                                                         const FString& NativeTokenLimitPerTransactionInWei,
-                                                                                         const FDateTime& PermissionEnd)
+UAsyncTaskThirdwebCreateSessionKey* UAsyncTaskThirdwebCreateSessionKey::CreateSessionKey(
+	UObject* WorldContextObject,
+	const FSmartWalletHandle& Wallet,
+	const FString& Signer,
+	const TArray<FString>& ApprovedTargets,
+	const FString& NativeTokenLimitPerTransactionInWei,
+	const FDateTime& PermissionEnd
+)
 {
 	if (!WorldContextObject)
 	{
@@ -54,7 +56,7 @@ void UAsyncTaskThirdwebCreateSessionKey::HandleResponse(const FString& TxHash)
 		}, TStatId(), nullptr, ENamedThreads::GameThread);
 		return;
 	}
-	
+
 	Success.Broadcast(TxHash, TEXT(""));
 	SetReadyToDestroy();
 }

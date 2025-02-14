@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
 #include "Kismet/BlueprintAsyncActionBase.h"
-
 #include "AsyncTaskThirdwebBase.generated.h"
 
 #define NEW_TASK \

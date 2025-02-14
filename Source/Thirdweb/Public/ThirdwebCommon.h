@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
@@ -29,33 +29,25 @@ enum class EOTPVerificationFunctionResult : uint8
 	Failed
 };
 
-UENUM(BlueprintType, DisplayName="OAuth Provider")
+UENUM(BlueprintType, DisplayName = "OAuth Provider")
 enum class EThirdwebOAuthProvider : uint8
 {
-	Google UMETA(DisplayName="Google"),
-	Apple UMETA(DisplayName="Apple"),
-	Facebook UMETA(DisplayName="Facebook"),
-	Discord UMETA(DisplayName="Discord"),
-	Farcaster UMETA(DisplayName="Farcaster"),
-	Telegram UMETA(DisplayName="Telegram"),
-	Line UMETA(DisplayName="Line"),
-	X UMETA(DisplayName="X"),
-	Coinbase UMETA(DisplayName="Coinbase"),
-	Twitch UMETA(DisplayName="Twitch"),
-	Github UMETA(DisplayName="Github"),
-	None UMETA(Hidden)
-};
+	Google UMETA(DisplayName = "Google"),
+	Apple UMETA(DisplayName = "Apple"),
+	Facebook UMETA(DisplayName = "Facebook"),
+	Discord UMETA(DisplayName = "Discord"),
+	Farcaster UMETA(DisplayName = "Farcaster"),
+	Telegram UMETA(DisplayName = "Telegram"),
+	Line UMETA(DisplayName = "Line"),
+	X UMETA(DisplayName = "X"),
+	Coinbase UMETA(DisplayName = "Coinbase"),
+	Twitch UMETA(DisplayName = "Twitch"),
+	Github UMETA(DisplayName = "Github"),
+	None UMETA(Hidden)};
 
-UENUM()
-enum class EThirdwebOAuthBrowserBackend : uint8
-{
-	Internal UMETA(DisplayName="Internal"),
-	External UMETA(DisplayName="External"),
-};
-
-UENUM(BlueprintType, DisplayName="OTP Method")
+UENUM(BlueprintType, DisplayName = "OTP Method")
 enum class EThirdwebOTPMethod : uint8
 {
-	Email UMETA(DisplayName="Email"),
-	Phone UMETA(DisplayName="Phone"),
+	Email UMETA(DisplayName = "Email"),
+	Phone UMETA(DisplayName = "Phone"),
 };

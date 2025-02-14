@@ -1,7 +1,8 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
+#include "Dom/JsonObject.h"
 #include "ThirdwebMacros.h"
 
 struct FThirdwebEngineTransactionOverrides;
@@ -28,13 +29,9 @@ namespace ThirdwebEngine::Contract
 		const FString& ContractAddress,
 		const FString& BackendWalletAddress,
 		const FSmartWalletHandle& SmartWallet,
-		const FString& FactoryAddress,
 		const FString& IdempotencyKey,
-		const FString& FunctionName,
-		const TArray<FString>& Args,
-		const FThirdwebEngineTransactionOverrides& TxOverrides,
-		const FString& Abi,
 		const bool bSimulateTx,
+		const TSharedPtr<FJsonObject>& Data,
 		const FStringDelegate& SuccessDelegate,
 		const FStringDelegate& ErrorDelegate
 	);

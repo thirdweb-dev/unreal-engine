@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #include "AsyncTasks/Engine/Marketplace/Offers/AsyncTaskOffersCancel.h"
 

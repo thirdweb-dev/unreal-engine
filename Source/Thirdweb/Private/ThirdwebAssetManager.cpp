@@ -1,36 +1,23 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #include "ThirdwebAssetManager.h"
 
-#if WITH_EDITOR || PLATFORM_ANDROID || PLATFORM_IOS
-#include "WebBrowserTexture.h"
-
-#include "Materials/Material.h"
-#endif
-
 UThirdwebAssetManager::UThirdwebAssetManager()
 {
-	DefaultMaterial = FString(TEXT("/Thirdweb/Assets/WebTexture_M.WebTexture_M"));
-	DefaultTranslucentMaterial = FString(TEXT("/Thirdweb/Assets/WebTexture_TM.WebTexture_TM"));
-	
-#if WITH_EDITOR || PLATFORM_ANDROID || PLATFORM_IOS
-	// Add a hard reference to UWebBrowserTexture, without this the WebBrowserTexture DLL never gets loaded on Windows.
-	UWebBrowserTexture::StaticClass();
-#endif
+	// Default materials removed, assuming new ones will be set up later or are no longer needed.
 }
 
 void UThirdwebAssetManager::LoadDefaultMaterials()
 {
-	DefaultMaterial.LoadSynchronous();
-	DefaultTranslucentMaterial.LoadSynchronous();
+	// No materials to load now.
 }
 
 UMaterial* UThirdwebAssetManager::GetDefaultMaterial()
 {
-	return DefaultMaterial.Get();
+	return nullptr; // Return nullptr or a new default material if necessary.
 }
 
 UMaterial* UThirdwebAssetManager::GetDefaultTranslucentMaterial()
 {
-	return DefaultTranslucentMaterial.Get();
+	return nullptr; // Return nullptr or a new default translucent material if necessary.
 }

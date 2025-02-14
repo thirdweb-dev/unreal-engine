@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+﻿// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
@@ -17,7 +17,6 @@ class IHttpRequest;
 class UTexture2D;
 class UTexture2DDynamic;
 enum class EThirdwebOAuthProvider : uint8;
-
 
 namespace ThirdwebUtils
 {
@@ -102,6 +101,9 @@ namespace ThirdwebUtils
 	{
 		extern TSharedPtr<FJsonObject> ToJson(const FString& String);
 		extern TArray<TSharedPtr<FJsonValue>> ToJsonArray(const FString& String);
+		// Meant for dynamic string arrays that hold different value types
+		extern TArray<TSharedPtr<FJsonValue>> ToJsonArray(const TArray<FString>& DynamicArray);
+		extern TSharedPtr<FJsonValue> ToJsonValue(const FString& String);
 		extern FString ToString(const TSharedPtr<FJsonObject>& JsonObject);
 		extern FString ToString(const TSharedPtr<FJsonValue>& JsonValue);
 		extern FString AsString(const TSharedPtr<FJsonValue>& JsonValue);
@@ -116,27 +118,31 @@ namespace ThirdwebUtils
 			return JsonObject.IsValid() && JsonObject->HasField(FieldName) ? !JsonObject->GetField<JsonType>(FieldName)->IsNull() : false;
 		}
 	}
-	
+
 	namespace Internal
 	{
 		extern FString MaskSensitiveString(const FString& InString, const FString& MatchString, const FString& MaskCharacter = TEXT("*"), const int32 ShowBeginCount = 4, const int32 ShowEndCount = 4);
-		extern TArray<FString> MaskSensitiveString(const TArray<FString>& InStrings,
-		                                           const FString& MatchString,
-		                                           const FString& MaskCharacter = TEXT("*"),
-		                                           const int32 ShowBeginCount = 4,
-		                                           const int32 ShowEndCount = 4);
-		extern TArray<FString> MaskSensitiveString(const TArray<FString>& InStrings,
-		                                           const TArray<FString>& MatchStrings,
-		                                           const FString& MaskCharacter = TEXT("*"),
-		                                           const int32 ShowBeginCount = 4,
-		                                           const int32 ShowEndCount = 4);
+		extern TArray<FString> MaskSensitiveString(
+			const TArray<FString>& InStrings,
+			const FString& MatchString,
+			const FString& MaskCharacter = TEXT("*"),
+			const int32 ShowBeginCount = 4,
+			const int32 ShowEndCount = 4
+		);
+		extern TArray<FString> MaskSensitiveString(
+			const TArray<FString>& InStrings,
+			const TArray<FString>& MatchStrings,
+			const FString& MaskCharacter = TEXT("*"),
+			const int32 ShowBeginCount = 4,
+			const int32 ShowEndCount = 4
+		);
 		extern void LogRequest(const TSharedRef<IHttpRequest>& Request, const TArray<FString>& SensitiveStrings = {});
 
 		extern int64 ParseInt64(const FString& String);
 		extern FString BytesToString(const TArray<uint8>& Bytes);
 		extern TArray<uint8> StringToBytes(const FString& String);
 		extern UTexture2DDynamic* BytesToTexture2DDynamic(const TArray<uint8>& Bytes);
-		
+
 		extern FString GetPluginVersion();
 		extern FString GenerateUUID();
 
@@ -156,11 +162,11 @@ namespace ThirdwebUtils
 
 		template <typename T = FJsonObject>
 		extern THIRDWEB_API T ConvertDownloadResult(const TArray<uint8>& Bytes);
-		
+
 		DECLARE_DELEGATE_OneParam(FUploadSuccessDelegate, const FThirdwebIPFSUploadResult& /* Result */);
 		extern void UploadInternal(const FString& Filename, const TArray<uint8>& Content, const FUploadSuccessDelegate& Success, const FStringDelegate& Error);
 
 		template <typename T = FString>
-		extern THIRDWEB_API void Upload(const FString& Filename, const T Content,  const FUploadSuccessDelegate& Success, const FStringDelegate& Error);
+		extern THIRDWEB_API void Upload(const FString& Filename, const T Content, const FUploadSuccessDelegate& Success, const FStringDelegate& Error);
 	}
 }

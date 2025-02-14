@@ -1,11 +1,10 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
 #include "AsyncTasks/AsyncTaskThirdwebBase.h"
+#include "Engine/Transaction/ThirdwebEngineTransactionStatusResult.h"
 #include "AsyncTaskTransactionGetTransactionStatus.generated.h"
-
-struct FThirdwebEngineTransactionStatusResult;
 
 UCLASS(Blueprintable, BlueprintType)
 class THIRDWEB_API UAsyncTaskTransactionGetTransactionStatus : public UAsyncTaskThirdwebBase

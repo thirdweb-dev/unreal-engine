@@ -1,45 +1,45 @@
 {
-	"FileVersion": 3,
-	"Version": 183,
-	"VersionName": "1.8.3",
-	"FriendlyName": "Thirdweb SDK",
-	"Description": "ThirdwebSDK for Unreal Engine",
-	"Category": "Thirdweb",
-	"CreatedBy": "Thirdweb",
-	"CreatedByURL": "https://thirdweb.com",
-	"DocsURL": "https://portal.thirdweb.com/unreal-engine",
-	"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/f21200c2610146f3888172994448e50d",
-	"SupportURL": "https://thirdweb.com/support",
-	"CanContainContent": true,
-	"IsBetaVersion": false,
-	"IsExperimentalVersion": false,
-	"Installed": false,
-	"EditorCustomVirtualPath": "Thirdweb",
-	"Modules": [
-		{
-			"Name": "Thirdweb",
-			"Type": "Runtime",
-			"LoadingPhase": "PreLoadingScreen",
-			"PlatformAllowList": [
-				"Win64",
-				"Mac",
-				"Linux",
-				"LinuxArm64",
-				"Android",
-				"IOS",
-				"TVOS",
-				"VisionOS"
-			]
-		},
-		{
-			"Name": "ThirdwebEditor",
-			"Type": "Editor",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "ThirdwebUncookedOnly",
-			"Type": "UncookedOnly",
-			"LoadingPhase": "Default"
-		}
-	]
+  "FileVersion": 3,
+  "Version": 200,
+  "VersionName": "2.0.0",
+  "FriendlyName": "Thirdweb SDK",
+  "Description": "ThirdwebSDK for Unreal Engine",
+  "Category": "Thirdweb",
+  "CreatedBy": "Thirdweb",
+  "CreatedByURL": "https://thirdweb.com",
+  "DocsURL": "https://portal.thirdweb.com/unreal-engine",
+  "MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/f21200c2610146f3888172994448e50d",
+  "SupportURL": "https://thirdweb.com/support",
+  "CanContainContent": true,
+  "IsBetaVersion": false,
+  "IsExperimentalVersion": false,
+  "Installed": false,
+  "EditorCustomVirtualPath": "Thirdweb",
+  "Modules": [
+    {
+      "Name": "Thirdweb",
+      "Type": "Runtime",
+      "LoadingPhase": "PreLoadingScreen",
+      "PlatformAllowList": [
+        "Win64",
+        "Mac",
+        "Linux",
+        "LinuxArm64",
+        "Android",
+        "IOS",
+        "TVOS",
+        "VisionOS"
+      ]
+    },
+    {
+      "Name": "ThirdwebEditor",
+      "Type": "Editor",
+      "LoadingPhase": "Default"
+    },
+    {
+      "Name": "ThirdwebUncookedOnly",
+      "Type": "UncookedOnly",
+      "LoadingPhase": "Default"
+    }
+  ]
 }

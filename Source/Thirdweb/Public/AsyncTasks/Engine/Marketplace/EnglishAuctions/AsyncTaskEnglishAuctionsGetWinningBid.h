@@ -1,11 +1,11 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
 #include "AsyncTasks/Engine/Marketplace/AsyncTaskMarketplaceGetBase.h"
+#include "Engine/Marketplace/EnglishAuctions/ThirdwebMarketplaceBid.h"
 #include "AsyncTaskEnglishAuctionsGetWinningBid.generated.h"
 
-struct FThirdwebMarketplaceBid;
 class UThirdwebMarketplace;
 /**
  * 
@@ -33,7 +33,7 @@ public:
 		UPARAM(DisplayName="Listing ID") const FString& ListingId
 	);
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetWinningBidDelegate, const  FThirdwebMarketplaceBid&, WinningBid, const FString&, Error);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FGetWinningBidDelegate, const FThirdwebMarketplaceBid&, WinningBid, const FString&, Error);
 
 	UPROPERTY(BlueprintAssignable)
 	FGetWinningBidDelegate Success;

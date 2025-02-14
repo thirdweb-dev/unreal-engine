@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
@@ -7,7 +7,7 @@
 
 enum class EThirdwebOAuthProvider : uint8;
 
-UCLASS(Abstract)
+UCLASS(meta=(HasDedicatedAsyncNode))
 class THIRDWEB_API UAsyncTaskThirdwebCreateOAuthWallet : public UAsyncTaskThirdwebInAppCreateWalletBase
 {
 	GENERATED_BODY()
@@ -24,7 +24,7 @@ public:
 protected:
 	UPROPERTY(Transient)
 	EThirdwebOAuthProvider Provider;
-	
+
 public:
 	virtual void Activate() override;
 };

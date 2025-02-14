@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 // Warning: The information provided in this file is for convenience, and is subject to change at any time.
 

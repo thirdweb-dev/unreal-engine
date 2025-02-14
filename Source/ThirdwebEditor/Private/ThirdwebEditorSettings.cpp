@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #include "ThirdwebEditorSettings.h"
 
@@ -17,6 +17,7 @@ UThirdwebEditorSettings::UThirdwebEditorSettings()
 	ScreenshotShortcut = FInputChord(EModifierKey::Control, EKeys::F7);
 	bScreenshotDisableNotifications = false;
 	ScreenshotNotificationTimeoutSeconds = 5;
+	bHideDropdownInEditorToolbar = false;
 }
 
 #if WITH_EDITOR

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+﻿// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 using UnrealBuildTool;
 
@@ -18,6 +18,7 @@ public class ThirdwebUncookedOnly : ModuleRules
 			"KismetCompiler",
 			"BlueprintGraph",
 			"UnrealEd",
+			"JsonUtilities"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new[]

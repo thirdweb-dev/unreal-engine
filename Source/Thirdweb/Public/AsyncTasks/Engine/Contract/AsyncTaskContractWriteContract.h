@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
@@ -7,26 +7,40 @@
 #include "Wallets/ThirdwebSmartWalletHandle.h"
 #include "AsyncTaskContractWriteContract.generated.h"
 
+struct FJsonObjectWrapper;
 
-UCLASS(Blueprintable, BlueprintType)
+UCLASS(meta=(HasDedicatedAsyncNode))
 class THIRDWEB_API UAsyncTaskContractWriteContract : public UAsyncTaskThirdwebBase
 {
 	GENERATED_BODY()
 
 public:
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AdvancedDisplay="IdempotencyKey,FactoryAddress,TxOverrides,Abi,bSimulateTx", AutoCreateRefTerm="Args,SmartWallet,TxOverrides"), Category="Thirdweb|Engine|Contract")
-	static UAsyncTaskContractWriteContract* WriteContract(UObject* WorldContextObject,
-	                                                            const int64 ChainId,
-	                                                            const FString& ContractAddress,
-	                                                            const FString& BackendWalletAddress,
-	                                                            const FSmartWalletHandle& SmartWallet,
-	                                                            const FString& FactoryAddress,
-	                                                            const FString& IdempotencyKey,
-	                                                            const FString& FunctionName,
-	                                                            const TArray<FString>& Args,
-	                                                            const FThirdwebEngineTransactionOverrides& TxOverrides,
-	                                                            const FString& Abi,
-	                                                            const bool bSimulateTx);
+	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="Thirdweb|Engine|Contract")
+	static UAsyncTaskContractWriteContract* WriteContract(
+		UObject* WorldContextObject,
+		const int64 ChainId,
+		const FString& ContractAddress,
+		const FString& BackendWalletAddress,
+		const FSmartWalletHandle& SmartWallet,
+		const FString& IdempotencyKey,
+		const FString& FunctionName,
+		const TArray<FString>& Args,
+		const FThirdwebEngineTransactionOverrides& TxOverrides,
+		const FString& Abi,
+		const bool bSimulateTx
+	);
+
+	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"), Category="Thirdweb|Engine|Contract")
+	static UAsyncTaskContractWriteContract* WriteContractRaw(
+		UObject* WorldContextObject,
+		const int64 ChainId,
+		const FString& ContractAddress,
+		const FString& BackendWalletAddress,
+		const FSmartWalletHandle& SmartWallet,
+		const FString& IdempotencyKey,
+		const FJsonObjectWrapper& Data,
+		const bool bSimulateTx
+	);
 
 	virtual void Activate() override;
 
@@ -52,25 +66,12 @@ protected:
 	FSmartWalletHandle SmartWallet;
 
 	UPROPERTY(Transient)
-	FString FactoryAddress;
-
-	UPROPERTY(Transient)
 	FString IdempotencyKey;
 
 	UPROPERTY(Transient)
-	FString FunctionName;
-
-	UPROPERTY(Transient)
-	TArray<FString> Args;
-
-	UPROPERTY(Transient)
-	FThirdwebEngineTransactionOverrides TxOverrides;
-
-	UPROPERTY(Transient)
-	FString Abi;
-
-	UPROPERTY(Transient)
 	bool bSimulateTx;
+
+	TSharedPtr<FJsonObject> Data;
 
 private:
 	virtual void HandleResponse(const FString& QueueId);

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+﻿// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
@@ -16,6 +16,8 @@ namespace TwPins
 	extern const FName Success;
 	extern const FName Failed;
 	extern const FName Error;
+
+	extern const FName Data;
 }
 
 UCLASS(Abstract)

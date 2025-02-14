@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+﻿// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #include "K2Node/K2Node_ThirdwebBaseAsyncTask.h"
 
@@ -19,6 +19,8 @@ namespace TwPins
 	const FName Success = FName(TEXT("Success"));
 	const FName Failed = FName(TEXT("Failed"));
 	const FName Error = FName(TEXT("Error"));
+	
+	const FName Data = FName(TEXT("Data"));
 }
 
 #define LOCTEXT_NAMESPACE "ThirdwebUncookedOnly"

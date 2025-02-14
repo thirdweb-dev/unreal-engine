@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+﻿// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #include "Wallets/ThirdwebSmartWalletHandle.h"
 
@@ -24,7 +24,7 @@
 
 #include "Tasks/Task.h"
 
-FSmartWalletHandle::FSmartWalletHandle(const FInAppWalletHandle& InInAppWallet, const FString& Int64String)
+FSmartWalletHandle::FSmartWalletHandle(const FInAppWalletHandle& InInAppWallet, const FString& Int64String, const FString& InCustomFactory)
 {
 	Type = Smart;
 	int64 InID;
@@ -32,6 +32,7 @@ FSmartWalletHandle::FSmartWalletHandle(const FInAppWalletHandle& InInAppWallet, 
 	FDefaultValueHelper::ParseInt64(Int64String, InID);
 	ensureAlwaysMsgf(InID > 0, TEXT("Invalid id 0"));
 	ID = InID;
+	CustomFactory = InCustomFactory;
 }
 
 void FSmartWalletHandle::Create(const FInAppWalletHandle& InInAppWallet,
@@ -43,7 +44,7 @@ void FSmartWalletHandle::Create(const FInAppWalletHandle& InInAppWallet,
                                 const FStringDelegate& ErrorDelegate)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate);
-	
+
 	if (!InInAppWallet.IsValid())
 	{
 		if (ErrorDelegate.IsBound())
@@ -52,7 +53,7 @@ void FSmartWalletHandle::Create(const FInAppWalletHandle& InInAppWallet,
 		}
 		return;
 	}
-	
+
 	UE::Tasks::Launch(UE_SOURCE_LOCATION, [InInAppWallet, ChainID, bGasless, Factory, AccountOverride, SuccessDelegate, ErrorDelegate]
 	{
 		if (FString Error; Thirdweb::create_smart_wallet(
@@ -66,7 +67,7 @@ void FSmartWalletHandle::Create(const FInAppWalletHandle& InInAppWallet,
 			TO_RUST_STRING(AccountOverride)
 		).AssignResult(Error))
 		{
-			const FSmartWalletHandle SmartWallet = FSmartWalletHandle(InInAppWallet, Error);
+			const FSmartWalletHandle SmartWallet = FSmartWalletHandle(InInAppWallet, Error, Factory);
 			SuccessDelegate.Execute(SmartWallet);
 			ThirdwebUtils::Internal::SendConnectEvent(SmartWallet);
 		}
@@ -84,7 +85,7 @@ void FSmartWalletHandle::IsDeployed(const FBoolDelegate& SuccessDelegate, const 
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate);
 	CHECK_VALIDITY(ErrorDelegate);
-	
+
 	FSmartWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION, [ThisCopy, SuccessDelegate, ErrorDelegate]
 	{
@@ -99,16 +100,18 @@ void FSmartWalletHandle::IsDeployed(const FBoolDelegate& SuccessDelegate, const 
 	});
 }
 
-void FSmartWalletHandle::CreateSessionKey(const FString& Signer,
-                                          const TArray<FString>& ApprovedTargets,
-                                          const FString& NativeTokenLimitPerTransactionInWei,
-                                          const FDateTime& PermissionEnd,
-                                          const FStringDelegate& SuccessDelegate,
-                                          const FStringDelegate& ErrorDelegate)
+void FSmartWalletHandle::CreateSessionKey(
+	const FString& Signer,
+	const TArray<FString>& ApprovedTargets,
+	const FString& NativeTokenLimitPerTransactionInWei,
+	const FDateTime& PermissionEnd,
+	const FStringDelegate& SuccessDelegate,
+	const FStringDelegate& ErrorDelegate
+)
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate);
 	CHECK_VALIDITY(ErrorDelegate);
-	
+
 	FDateTime TenYearsFromNow = FDateTime::UtcNow() + FTimespan::FromDays(10 * 365);
 	FDateTime EndTime = TenYearsFromNow;
 	TArray<const char*> ApprovedTargetsCArray;
@@ -167,7 +170,7 @@ void FSmartWalletHandle::RevokeSessionKey(const FString& Signer, const FSimpleDe
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate);
 	CHECK_VALIDITY(ErrorDelegate);
-	
+
 	FSmartWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION, [ThisCopy, Signer, SuccessDelegate, ErrorDelegate]
 	{
@@ -186,7 +189,7 @@ void FSmartWalletHandle::GetAdmins(const FStringArrayDelegate& SuccessDelegate, 
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate);
 	CHECK_VALIDITY(ErrorDelegate);
-	
+
 	FSmartWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION, [ThisCopy, SuccessDelegate, ErrorDelegate]
 	{
@@ -219,14 +222,15 @@ void FSmartWalletHandle::AddAdmin(const FString& Signer, const FSimpleDelegate& 
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate);
 	CHECK_VALIDITY(ErrorDelegate);
-	
+
 	FSmartWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION, [ThisCopy, Signer, SuccessDelegate, ErrorDelegate]
 	{
 		if (FString Error; Thirdweb::smart_wallet_add_admin(ThisCopy.GetID(), TO_RUST_STRING(Signer)).AssignResult(Error))
 		{
 			SuccessDelegate.Execute();
-		} else
+		}
+		else
 		{
 			ErrorDelegate.Execute(Error);
 		}
@@ -237,14 +241,15 @@ void FSmartWalletHandle::RemoveAdmin(const FString& Signer, const FSimpleDelegat
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate);
 	CHECK_VALIDITY(ErrorDelegate);
-	
+
 	FSmartWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION, [ThisCopy, Signer, SuccessDelegate, ErrorDelegate]
 	{
 		if (FString Error; Thirdweb::smart_wallet_remove_admin(ThisCopy.GetID(), TO_RUST_STRING(Signer)).AssignResult(Error))
 		{
 			SuccessDelegate.Execute();
-		} else
+		}
+		else
 		{
 			ErrorDelegate.Execute(Error);
 		}
@@ -255,7 +260,7 @@ void FSmartWalletHandle::GetActiveSigners(const FGetActiveSignersDelegate& Succe
 {
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate);
 	CHECK_VALIDITY(ErrorDelegate);
-	
+
 	FSmartWalletHandle ThisCopy = *this;
 	UE::Tasks::Launch(UE_SOURCE_LOCATION, [ThisCopy, SuccessDelegate, ErrorDelegate]
 	{

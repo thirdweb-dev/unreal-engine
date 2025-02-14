@@ -1,6 +1,8 @@
-﻿// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+﻿// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #include "Containers/ThirdwebLinkedAccount.h"
+
+#include "Dom/JsonObject.h"
 
 FThirdwebLinkedAccount FThirdwebLinkedAccount::FromJson(const TSharedPtr<FJsonObject>& JsonObject)
 {

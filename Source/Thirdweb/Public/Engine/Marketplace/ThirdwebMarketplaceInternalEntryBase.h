@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #pragma once
 
@@ -34,7 +34,7 @@ struct THIRDWEB_API FThirdwebMarketplaceInternalEntryBase
 	FThirdwebAsset Asset;
 
 	UPROPERTY(BlueprintReadWrite, Category="Core")
-	EThirdwebMarketplaceListingStatus Status;
+	EThirdwebMarketplaceListingStatus Status = EThirdwebMarketplaceListingStatus::Max;
 
 	UPROPERTY(BlueprintReadWrite, Category="Core")
 	FDateTime StartTimeInSeconds;

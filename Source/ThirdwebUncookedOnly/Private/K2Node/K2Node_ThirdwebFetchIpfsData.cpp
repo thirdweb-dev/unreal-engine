@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2024 Thirdweb. All Rights Reserved.
+﻿// Copyright (c) 2025 Thirdweb. All Rights Reserved.
 
 #include "K2Node/K2Node_ThirdwebFetchIpfsData.h"
 
@@ -18,7 +18,6 @@
 namespace TwPins
 {
 	const FName Uri = FName(TEXT("Uri"));
-	const FName Data = FName(TEXT("Data"));
 }
 
 #define LOCTEXT_NAMESPACE "ThirdwebUncookedOnly"
