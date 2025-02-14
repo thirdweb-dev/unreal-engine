@@ -27,19 +27,7 @@ The plugin's core logic is built from Rust, making it lightning-fast and minimiz
 
 ## Packaging
 
-Windows, Linux, and Android all package natively and can be used in blueprint-only projects
-
-### Mac
-
-The plugin currently makes use of the [Web Browser][web-browser-doc] runtime module which bundles [CEF3][cef-forum].
-Changes to the engine are currently required for modern xcode targets as Unreal Engine does not properly link
-the framework during packaging. This requires either an engine patch or moving the framework post-build and
-then codesigning your build again.
-
-In the [CEF3.build.cs][cef3-build-cs] you need to bypass the `if` check for modern xcode. This can be accomplished by
-adding `|| true` to the end of the if check on line 102.
-
-Additionally, you need to add `bCompileCEF3 = true;` to your build target
+Windows, Linux, Mac and Android all package natively and can be used in blueprint-only projects
 
 ## Supported Platforms & Architectures
 
@@ -64,6 +52,3 @@ Documentation is available at https://portal.thirdweb.com/unreal-engine
 [support-url]: https://thirdweb.com/support
 [documentation-url]: https://portal.thirdweb.com/unreal
 [marketplace-url]: https://www.unrealengine.com/marketplace/en-US/product/f21200c2610146f3888172994448e50d
-[web-browser-doc]: https://dev.epicgames.com/documentation/en-us/unreal-engine/API/Runtime/WebBrowser
-[cef-forum]: https://www.magpcss.org/ceforum/index.php
-[cef3-build-cs]: https://github.com/EpicGames/UnrealEngine/blob/release/Engine/Source/ThirdParty/CEF3/CEF3.build.cs#L102

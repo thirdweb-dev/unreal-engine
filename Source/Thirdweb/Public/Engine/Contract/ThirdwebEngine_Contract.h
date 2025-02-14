@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Dom/JsonObject.h"
 #include "ThirdwebMacros.h"
 
 struct FThirdwebEngineTransactionOverrides;

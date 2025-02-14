@@ -12,7 +12,6 @@
 #include "Internal/ThirdwebURLSearchParams.h"
 #include "Kismet/KismetStringLibrary.h"
 #include "Wallets/ThirdwebSmartWalletHandle.h"
-#include "WorldPartition/WorldPartitionBuilder.h"
 
 namespace ThirdwebEngine::Contract
 {
