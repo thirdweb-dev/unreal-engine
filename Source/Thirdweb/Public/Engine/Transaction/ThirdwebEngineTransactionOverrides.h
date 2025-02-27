@@ -11,16 +11,16 @@ struct THIRDWEB_API FThirdwebEngineTransactionOverrides
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, DisplayName="Gas Limit", Category="Thirdweb|Engine")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, DisplayName = "Gas Limit", Category = "Thirdweb|Engine")
 	int64 Gas = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Thirdweb|Engine")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Thirdweb|Engine")
 	int64 MaxFeePerGas = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Thirdweb|Engine")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Thirdweb|Engine")
 	int64 MaxPriorityFeePerGas = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Thirdweb|Engine")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Thirdweb|Engine")
 	int64 Value = 0;
 
 	bool IsDefault() const { return Gas == 0 && MaxFeePerGas == 0 && MaxPriorityFeePerGas == 0 && Value == 0; }
