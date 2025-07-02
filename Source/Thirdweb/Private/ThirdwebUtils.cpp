@@ -4,13 +4,6 @@
 
 #include <random>
 
-#include "HttpModule.h"
-#include "IImageWrapperModule.h"
-#include "RenderingThread.h"
-#include "TextureResource.h"
-#include "Thirdweb.h"
-#include "ThirdwebLog.h"
-#include "ThirdwebRuntimeSettings.h"
 #include "Async/TaskGraphInterfaces.h"
 #include "Containers/ThirdwebIPFSUploadResult.h"
 #include "Containers/ThirdwebMultipartFormData.h"
@@ -19,6 +12,8 @@
 #include "Engine/Texture2DDynamic.h"
 #include "Engine/ThirdwebEngineCommon.h"
 #include "GenericPlatform/GenericPlatformHttp.h"
+#include "HttpModule.h"
+#include "IImageWrapperModule.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Interfaces/IPluginManager.h"
@@ -29,13 +24,19 @@
 #include "Misc/DefaultValueHelper.h"
 #include "Modules/ModuleManager.h"
 #include "Policies/CondensedJsonPrintPolicy.h"
+#include "RenderingThread.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
+#include "TextureResource.h"
 #include "ThirdParty/QRCodeGenerator.h"
+#include "Thirdweb.h"
+#include "ThirdwebLog.h"
+#include "ThirdwebRuntimeSettings.h"
 #include "Wallets/ThirdwebInAppWalletHandle.h"
 #include "Wallets/ThirdwebSmartWalletHandle.h"
 #include "Wallets/ThirdwebWalletHandle.h"
+
 
 #define LOCTEXT_NAMESPACE "Thirdweb"
 
@@ -43,23 +44,50 @@ namespace ThirdwebUtils
 {
 	const TCHAR* ZeroAddress = TEXT("0x0000000000000000000000000000000000000000");
 
-	bool IsChecksummedAddress(const FString& Address) { return Thirdweb::is_valid_address(TO_RUST_STRING(Address), true).GetOutput().ToBool(); }
+	bool IsChecksummedAddress(const FString& Address)
+	{
+		return Thirdweb::is_valid_address(TO_RUST_STRING(Address), true).GetOutput().ToBool();
+	}
 
-	bool IsValidAddress(const FString& Address, const bool bWithChecksum) { return Thirdweb::is_valid_address(TO_RUST_STRING(Address), bWithChecksum).GetOutput().ToBool(); }
+	bool IsValidAddress(const FString& Address, const bool bWithChecksum)
+	{
+		return Thirdweb::is_valid_address(TO_RUST_STRING(Address), bWithChecksum).GetOutput().ToBool();
+	}
 
-	FString ToChecksummedAddress(const FString& Address) { return Thirdweb::to_checksummed_address(TO_RUST_STRING(Address)).GetOutput(); }
+	FString ToChecksummedAddress(const FString& Address)
+	{
+		return Thirdweb::to_checksummed_address(TO_RUST_STRING(Address)).GetOutput();
+	}
 
-	FText ToText(const EThirdwebOAuthProvider Provider) { return Maps::OAuthProviderToText.Contains(Provider) ? Maps::OAuthProviderToText[Provider] : FText::FromString(TEXT("Invalid")); }
+	FText ToText(const EThirdwebOAuthProvider Provider)
+	{
+		return Maps::OAuthProviderToText.Contains(Provider) ? Maps::OAuthProviderToText[Provider] : FText::FromString(TEXT("Invalid"));
+	}
 
-	FText ToText(const EThirdwebEngineTransactionStatus Status) { return Maps::TransactionStatusToText.Contains(Status) ? Maps::TransactionStatusToText[Status] : FText::FromString(TEXT("Invalid")); }
+	FText ToText(const EThirdwebEngineTransactionStatus Status)
+	{
+		return Maps::TransactionStatusToText.Contains(Status) ? Maps::TransactionStatusToText[Status] : FText::FromString(TEXT("Invalid"));
+	}
 
-	FText ToText(const EThirdwebEngineTransactionOnChainStatus Status) { return Maps::OnChainStatusToText.Contains(Status) ? Maps::OnChainStatusToText[Status] : FText::FromString(TEXT("Invalid")); }
+	FText ToText(const EThirdwebEngineTransactionOnChainStatus Status)
+	{
+		return Maps::OnChainStatusToText.Contains(Status) ? Maps::OnChainStatusToText[Status] : FText::FromString(TEXT("Invalid"));
+	}
 
-	FString ToString(const EThirdwebOAuthProvider Provider) { return ToText(Provider).ToString(); }
+	FString ToString(const EThirdwebOAuthProvider Provider)
+	{
+		return ToText(Provider).ToString();
+	}
 
-	FString ToString(const EThirdwebEngineTransactionStatus Status) { return ToText(Status).ToString(); }
+	FString ToString(const EThirdwebEngineTransactionStatus Status)
+	{
+		return ToText(Status).ToString();
+	}
 
-	FString ToString(const EThirdwebEngineTransactionOnChainStatus Status) { return ToText(Status).ToString(); }
+	FString ToString(const EThirdwebEngineTransactionOnChainStatus Status)
+	{
+		return ToText(Status).ToString();
+	}
 
 	EThirdwebOAuthProvider ToOAuthProvider(const FText& Text)
 	{
@@ -97,16 +125,34 @@ namespace ThirdwebUtils
 		return EThirdwebEngineTransactionOnChainStatus::Unknown;
 	}
 
-	EThirdwebOAuthProvider ToOAuthProvider(const FString& String) { return ToOAuthProvider(FText::FromString(String)); }
+	EThirdwebOAuthProvider ToOAuthProvider(const FString& String)
+	{
+		return ToOAuthProvider(FText::FromString(String));
+	}
 
-	EThirdwebEngineTransactionStatus ToTransactionStatus(const FString& String) { return ToTransactionStatus(FText::FromString(String)); }
+	EThirdwebEngineTransactionStatus ToTransactionStatus(const FString& String)
+	{
+		return ToTransactionStatus(FText::FromString(String));
+	}
 
-	EThirdwebEngineTransactionOnChainStatus ToOnChainStatus(const FString& String) { return ToOnChainStatus(FText::FromString(String)); }
+	EThirdwebEngineTransactionOnChainStatus ToOnChainStatus(const FString& String)
+	{
+		return ToOnChainStatus(FText::FromString(String));
+	}
 
 	FString ParseAuthResult(const FString& AuthResult)
 	{
 		FString Result = AuthResult;
 		TW_LOG(Verbose, TEXT("ThirdwebUtils::ParseAuthResult::Initial::%s"), *Result)
+
+		// Remove any URL fragments (everything after #)
+		FString Left, Right;
+		if (Result.Split(TEXT("#"), &Left, &Right, ESearchCase::IgnoreCase))
+		{
+			Result = Left;
+			TW_LOG(VeryVerbose, TEXT("ThirdwebUtils::ParseAuthResult::RemovedFragment::%s"), *Result)
+		}
+
 		if (Result.StartsWith(TEXT("%7B%22")))
 		{
 			Result = FGenericPlatformHttp::UrlDecode(Result);
@@ -165,24 +211,25 @@ namespace ThirdwebUtils
 				Request->SetVerb(TEXT("GET"));
 				Request->SetTimeout(30.0f);
 				Request->SetURL(FinalUrl);
-				Request->OnProcessRequestComplete().BindLambda([Success, Error](FHttpRequestPtr, const FHttpResponsePtr& Response, const bool bConnectedSuccessfully)
-				{
-					if (bConnectedSuccessfully)
+				Request->OnProcessRequestComplete().BindLambda(
+					[Success, Error](FHttpRequestPtr, const FHttpResponsePtr& Response, const bool bConnectedSuccessfully)
 					{
-						if (Response.IsValid())
+						if (bConnectedSuccessfully)
 						{
-							EXECUTE_IF_BOUND(Success, Response->GetContent())
+							if (Response.IsValid())
+							{
+								EXECUTE_IF_BOUND(Success, Response->GetContent())
+							}
+							else
+							{
+								EXECUTE_IF_BOUND(Error, TEXT("Invalid Response Object"))
+							}
 						}
 						else
 						{
-							EXECUTE_IF_BOUND(Error, TEXT("Invalid Response Object"))
+							EXECUTE_IF_BOUND(Error, TEXT("Network Connection Error"))
 						}
-					}
-					else
-					{
-						EXECUTE_IF_BOUND(Error, TEXT("Network Connection Error"))
-					}
-				});
+					});
 				Request->ProcessRequest();
 			}
 		}
@@ -204,14 +251,18 @@ namespace ThirdwebUtils
 			}
 			else
 			{
-				static_assert(std::is_same_v<T, TSharedPtr<FJsonObject>> || std::is_same_v<T, UTexture2DDynamic*> || std::is_same_v<T, FString>, "Unsupported type for ConvertDownloadResult");
+				static_assert(std::is_same_v<T, TSharedPtr<FJsonObject>> || std::is_same_v<T, UTexture2DDynamic*> || std::is_same_v<T, FString>,
+				              "Unsupported type for ConvertDownloadResult");
 				return T{};
 			}
 		}
 
-		template THIRDWEB_API TSharedPtr<FJsonObject> ConvertDownloadResult<TSharedPtr<FJsonObject>>(const TArray<uint8>& Bytes);
-		template THIRDWEB_API UTexture2DDynamic* ConvertDownloadResult<UTexture2DDynamic*>(const TArray<uint8>& Bytes);
-		template THIRDWEB_API FString ConvertDownloadResult<FString>(const TArray<uint8>& Bytes);
+		template THIRDWEB_API TSharedPtr<FJsonObject>
+		ConvertDownloadResult<TSharedPtr<FJsonObject>>(const TArray<uint8>& Bytes);
+		template THIRDWEB_API UTexture2DDynamic*
+		ConvertDownloadResult<UTexture2DDynamic*>(const TArray<uint8>& Bytes);
+		template THIRDWEB_API FString
+		ConvertDownloadResult<FString>(const TArray<uint8>& Bytes);
 
 		template <typename T>
 		void Upload(const FString& Filename, const T Content, const FUploadSuccessDelegate& Success, const FStringDelegate& Error)
@@ -231,8 +282,10 @@ namespace ThirdwebUtils
 			}
 		}
 
-		template THIRDWEB_API void Upload<TArray<uint8>>(const FString& Filename, const TArray<uint8> Content, const FUploadSuccessDelegate& Success, const FStringDelegate& Error);
-		template THIRDWEB_API void Upload<FString>(const FString& Filename, const FString Content, const FUploadSuccessDelegate& Success, const FStringDelegate& Error);
+		template THIRDWEB_API void
+		Upload<TArray<uint8>>(const FString& Filename, const TArray<uint8> Content, const FUploadSuccessDelegate& Success, const FStringDelegate& Error);
+		template THIRDWEB_API void
+		Upload<FString>(const FString& Filename, const FString Content, const FUploadSuccessDelegate& Success, const FStringDelegate& Error);
 
 		void UploadInternal(const FString& Filename, const TArray<uint8>& Content, const FUploadSuccessDelegate& Success, const FStringDelegate& Error)
 		{
@@ -260,36 +313,46 @@ namespace ThirdwebUtils
 			Request->SetHeader(TEXT("Content-Type"), TEXT("multipart/form-data; boundary=") + Boundary);
 
 			// Bind the request completion callbacks
-			Request->OnProcessRequestComplete().BindLambda([Success, Error](FHttpRequestPtr, const FHttpResponsePtr& Response, const bool bConnectedSuccessfully)
-			{
-				if (bConnectedSuccessfully && Response.IsValid() && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
+			Request->OnProcessRequestComplete().BindLambda(
+				[Success, Error](FHttpRequestPtr, const FHttpResponsePtr& Response, const bool bConnectedSuccessfully)
 				{
-					EXECUTE_IF_BOUND(Success, FThirdwebIPFSUploadResult::FromJson(Response->GetContentAsString()));
-				}
-				else
-				{
-					EXECUTE_IF_BOUND(Error, Response.IsValid() ? Response->GetContentAsString() : TEXT("Request failed"));
-				}
-			});
+					if (bConnectedSuccessfully && Response.IsValid() && EHttpResponseCodes::IsOk(Response->GetResponseCode()))
+					{
+						EXECUTE_IF_BOUND(Success, FThirdwebIPFSUploadResult::FromJson( Response->GetContentAsString()));
+					}
+					else
+					{
+						EXECUTE_IF_BOUND(Error, Response.IsValid() ? Response->GetContentAsString() : TEXT("Request failed"));
+					}
+				});
 
 			// Execute the request
 			Request->ProcessRequest();
 		}
-	}
+	} // namespace Storage
 
 	namespace Internal
 	{
-		FString MaskSensitiveString(const FString& InString, const FString& MatchString, const FString& MaskCharacter, const int32 ShowBeginCount, const int32 ShowEndCount)
+		FString MaskSensitiveString(const FString& InString,
+		                            const FString& MatchString,
+		                            const FString& MaskCharacter,
+		                            const int32 ShowBeginCount,
+		                            const int32 ShowEndCount)
 		{
 			FString UnmatchedLeft, UnmatchedRight;
 			if (InString.Split(MatchString, &UnmatchedLeft, &UnmatchedRight))
 			{
-				return UnmatchedLeft + MatchString.Left(ShowBeginCount) + MaskCharacter + MaskCharacter + MaskCharacter + MatchString.Right(ShowEndCount) + UnmatchedRight;
+				return UnmatchedLeft + MatchString.Left(ShowBeginCount) + MaskCharacter + MaskCharacter + MaskCharacter + MatchString.Right(ShowEndCount) +
+					UnmatchedRight;
 			}
 			return InString;
 		}
 
-		TArray<FString> MaskSensitiveString(const TArray<FString>& InStrings, const FString& MatchString, const FString& MaskCharacter, const int32 ShowBeginCount, const int32 ShowEndCount)
+		TArray<FString> MaskSensitiveString(const TArray<FString>& InStrings,
+		                                    const FString& MatchString,
+		                                    const FString& MaskCharacter,
+		                                    const int32 ShowBeginCount,
+		                                    const int32 ShowEndCount)
 		{
 			TArray<FString> Result;
 			for (const FString& InString : InStrings)
@@ -299,7 +362,11 @@ namespace ThirdwebUtils
 			return Result;
 		}
 
-		TArray<FString> MaskSensitiveString(const TArray<FString>& InStrings, const TArray<FString>& MatchStrings, const FString& MaskCharacter, const int32 ShowBeginCount, const int32 ShowEndCount)
+		TArray<FString> MaskSensitiveString(const TArray<FString>& InStrings,
+		                                    const TArray<FString>& MatchStrings,
+		                                    const FString& MaskCharacter,
+		                                    const int32 ShowBeginCount,
+		                                    const int32 ShowEndCount)
 		{
 			TArray<FString> Result;
 			for (const FString& InString : InStrings)
@@ -319,13 +386,12 @@ namespace ThirdwebUtils
 			TArray<FString> Sensitive = SensitiveStrings;
 			Sensitive.AddUnique(UThirdwebRuntimeSettings::GetEngineAccessToken());
 			TArray<uint8> Content = Request->GetContent();
-			TW_LOG(
-				VeryVerbose,
-				TEXT("ThirdwebUtils::Internal::LogRequest::URL=%s | Headers=%s | Content=%s"),
-				*Request->GetURL(),
-				*UKismetStringLibrary::JoinStringArray(ThirdwebUtils::Internal::MaskSensitiveString(Request->GetAllHeaders(), SensitiveStrings), TEXT(";")),
-				ANSI_TO_TCHAR(reinterpret_cast<const char*>(Request->GetContent().GetData()))
-			)
+			TW_LOG(VeryVerbose,
+			       TEXT("ThirdwebUtils::Internal::LogRequest::URL=%s | Headers=%s | " "Content=%s"),
+			       *Request->GetURL(),
+			       *UKismetStringLibrary::JoinStringArray( ThirdwebUtils::Internal::MaskSensitiveString( Request->GetAllHeaders(), SensitiveStrings), TEXT(";")
+			       ),
+			       ANSI_TO_TCHAR( reinterpret_cast<const char *>(Request->GetContent().GetData())))
 		}
 
 		int64 ParseInt64(const FString& String)
@@ -410,7 +476,10 @@ namespace ThirdwebUtils
 			std::string Result;
 			for (int i = 0; i < 16; i++)
 			{
-				if (Dash[i]) Result += "-";
+				if (Dash[i])
+				{
+					Result += "-";
+				}
 				Result += Options[Distribution(RNG)];
 				Result += Options[Distribution(RNG)];
 			}
@@ -423,14 +492,12 @@ namespace ThirdwebUtils
 			if (!IsInGameThread())
 			{
 				const FWalletHandle WalletCopy = Wallet;
-				FFunctionGraphTask::CreateAndDispatchWhenReady([WalletCopy]()
-				{
-					SendConnectEvent(WalletCopy);
-				}, TStatId(), nullptr, ENamedThreads::GameThread);
+				FFunctionGraphTask::CreateAndDispatchWhenReady([WalletCopy]() { SendConnectEvent(WalletCopy); }, TStatId(), nullptr, ENamedThreads::GameThread);
 				return;
 			}
 			const UThirdwebRuntimeSettings* Settings = UThirdwebRuntimeSettings::Get();
-			if (!UThirdwebRuntimeSettings::AnalyticsEnabled() || UThirdwebRuntimeSettings::GetBundleId().IsEmpty() || UThirdwebRuntimeSettings::GetClientId().IsEmpty())
+			if (!UThirdwebRuntimeSettings::AnalyticsEnabled() || UThirdwebRuntimeSettings::GetBundleId().IsEmpty() || UThirdwebRuntimeSettings::GetClientId().
+				IsEmpty())
 			{
 				return;
 			}
@@ -461,8 +528,16 @@ namespace ThirdwebUtils
 			Request->ProcessRequest();
 		}
 
-		void SendConnectEvent(const FInAppWalletHandle Wallet) { SendConnectEvent(FWalletHandle(Wallet)); }
-		void SendConnectEvent(const FSmartWalletHandle Wallet) { SendConnectEvent(FWalletHandle(Wallet)); }
+		void SendConnectEvent(const FInAppWalletHandle Wallet)
+		{
+			SendConnectEvent(FWalletHandle(Wallet));
+		}
+
+		void SendConnectEvent(const FSmartWalletHandle Wallet)
+		{
+			SendConnectEvent(FWalletHandle(Wallet));
+		}
+
 		// ReSharper restore CppPassValueParameterByConstReference
 
 		TSharedRef<IHttpRequest> CreateEngineRequest(const FString& Verb)
@@ -486,7 +561,7 @@ namespace ThirdwebUtils
 			const FString GatewayUrl = Gateway.IsEmpty() ? DefaultGateway : Gateway;
 			return Gateway + Url.RightChop(7);
 		}
-	}
+	} // namespace Internal
 
 	namespace Maps
 	{
@@ -516,7 +591,7 @@ namespace ThirdwebUtils
 			{EThirdwebEngineTransactionOnChainStatus::Success, LOCTEXT("Success", "Success")},
 			{EThirdwebEngineTransactionOnChainStatus::Reverted, LOCTEXT("Reverted", "Reverted")}
 		};
-	}
+	} // namespace Maps
 
 	namespace Json
 	{
@@ -540,7 +615,8 @@ namespace ThirdwebUtils
 			return JsonArray;
 		}
 
-		TArray<TSharedPtr<FJsonValue>> ToJsonArray(const TArray<FString>& DynamicArray)
+		TArray<TSharedPtr<FJsonValue>>
+		ToJsonArray(const TArray<FString>& DynamicArray)
 		{
 			TArray<TSharedPtr<FJsonValue>> JsonValueArray;
 			for (const FString& Item : DynamicArray)
@@ -570,7 +646,8 @@ namespace ThirdwebUtils
 		FString ToString(const TSharedPtr<FJsonObject>& JsonObject)
 		{
 			FString Out;
-			const TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Out);
+			const TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<
+				TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Out);
 			FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 			return Out;
 		}
@@ -578,7 +655,8 @@ namespace ThirdwebUtils
 		FString ToString(const TArray<TSharedPtr<FJsonValue>>& JsonValueArray)
 		{
 			FString Out;
-			const TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Out);
+			const TSharedRef<TJsonWriter<TCHAR, TCondensedJsonPrintPolicy<TCHAR>>> Writer = TJsonWriterFactory<
+				TCHAR, TCondensedJsonPrintPolicy<TCHAR>>::Create(&Out);
 			FJsonSerializer::Serialize(JsonValueArray, Writer);
 			return Out;
 		}
@@ -589,12 +667,18 @@ namespace ThirdwebUtils
 			{
 				switch (JsonValue->Type)
 				{
-				case EJson::String: return JsonValue->AsString();
-				case EJson::Boolean: return JsonValue->AsBool() ? TEXT("true") : TEXT("false");
-				case EJson::Array: return ToString(JsonValue->AsArray());
-				case EJson::Object: return ToString(JsonValue->AsObject());
-				case EJson::Number: return FString::SanitizeFloat(JsonValue->AsNumber(), 0);
-				default: return TEXT("");
+				case EJson::String:
+					return JsonValue->AsString();
+				case EJson::Boolean:
+					return JsonValue->AsBool() ? TEXT("true") : TEXT("false");
+				case EJson::Array:
+					return ToString(JsonValue->AsArray());
+				case EJson::Object:
+					return ToString(JsonValue->AsObject());
+				case EJson::Number:
+					return FString::SanitizeFloat(JsonValue->AsNumber(), 0);
+				default:
+					return TEXT("");
 				}
 			}
 			return TEXT("");
@@ -606,12 +690,18 @@ namespace ThirdwebUtils
 			{
 				switch (JsonValue->Type)
 				{
-				case EJson::String: return JsonValue->AsString();
-				case EJson::Number: return FString::Printf(TEXT("%f"), JsonValue->AsNumber());
-				case EJson::Boolean: return JsonValue->AsBool() ? TEXT("true") : TEXT("false");
-				case EJson::Object: return ToString(JsonValue->AsObject());
-				case EJson::Array: return ToString(JsonValue->AsArray());
-				default: return TEXT("");
+				case EJson::String:
+					return JsonValue->AsString();
+				case EJson::Number:
+					return FString::Printf(TEXT("%f"), JsonValue->AsNumber());
+				case EJson::Boolean:
+					return JsonValue->AsBool() ? TEXT("true") : TEXT("false");
+				case EJson::Object:
+					return ToString(JsonValue->AsObject());
+				case EJson::Array:
+					return ToString(JsonValue->AsArray());
+				default:
+					return TEXT("");
 				}
 			}
 			return TEXT("");
@@ -670,7 +760,7 @@ namespace ThirdwebUtils
 			}
 			return Message;
 		}
-	}
-}
+	} // namespace Json
+} // namespace ThirdwebUtils
 
 #undef LOCTEXT_NAMESPACE
