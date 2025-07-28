@@ -73,14 +73,15 @@ namespace Thirdweb
 
 	// Smart Wallet Methods
 
-	FFIResult create_smart_wallet(const char* client_id,
-	                              const char* bundle_id,
-	                              const char* secret_key,
-	                              uintptr_t personal_wallet_handle_id,
-	                              const char* chain_id,
-	                              bool gasless,
-	                              const char* factory,
-	                              const char* account_override);
+	FFIResult create_smart_wallet(const char *client_id,
+                              const char *bundle_id,
+                              const char *secret_key,
+                              uintptr_t personal_wallet_handle_id,
+                              const char *chain_id,
+                              bool gasless,
+                              const char *factory,
+                              const char *account_override,
+                              const char *entry_point);
 	FFIResult smart_wallet_is_deployed(uintptr_t handle_id);
 	FFIResult smart_wallet_get_all_admins(uintptr_t handle_id);
 	FFIResult smart_wallet_get_all_active_signers(uintptr_t handle_id);

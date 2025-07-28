@@ -14,6 +14,7 @@ void UAsyncTaskThirdwebCreateSmartWallet::Activate()
 		bGasless,
 		Factory,
 		AccountOverride,
+		EntryPoint,
 		BIND_UOBJECT_DELEGATE(FSmartWalletHandle::FCreateSmartWalletDelegate, HandleResponse),
 		BIND_UOBJECT_DELEGATE(FStringDelegate, HandleFailed)
 	);
