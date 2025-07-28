@@ -40,6 +40,7 @@ void FSmartWalletHandle::Create(const FInAppWalletHandle& InInAppWallet,
                                 const bool bGasless,
                                 const FString& Factory,
                                 const FString& AccountOverride,
+								const FString& EntryPoint,
                                 const FCreateSmartWalletDelegate& SuccessDelegate,
                                 const FStringDelegate& ErrorDelegate)
 {
@@ -54,7 +55,7 @@ void FSmartWalletHandle::Create(const FInAppWalletHandle& InInAppWallet,
 		return;
 	}
 
-	UE::Tasks::Launch(UE_SOURCE_LOCATION, [InInAppWallet, ChainID, bGasless, Factory, AccountOverride, SuccessDelegate, ErrorDelegate]
+	UE::Tasks::Launch(UE_SOURCE_LOCATION, [InInAppWallet, ChainID, bGasless, Factory, AccountOverride, EntryPoint, SuccessDelegate, ErrorDelegate]
 	{
 		if (FString Error; Thirdweb::create_smart_wallet(
 			TO_RUST_STRING(UThirdwebRuntimeSettings::GetClientId()),
@@ -64,7 +65,8 @@ void FSmartWalletHandle::Create(const FInAppWalletHandle& InInAppWallet,
 			TO_RUST_STRING(FString::Printf(TEXT("%lld"), ChainID)),
 			bGasless,
 			TO_RUST_STRING(Factory),
-			TO_RUST_STRING(AccountOverride)
+			TO_RUST_STRING(AccountOverride),
+			TO_RUST_STRING(EntryPoint)
 		).AssignResult(Error))
 		{
 			const FSmartWalletHandle SmartWallet = FSmartWalletHandle(InInAppWallet, Error, Factory);

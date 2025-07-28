@@ -29,6 +29,7 @@ namespace TwPins
 	const FName Gasless = FName(TEXT("bGasless"));
 	const FName Factory = FName(TEXT("Factory"));
 	const FName AccountOverride = FName(TEXT("AccountOverride"));
+	const FName EntryPoint = FName(TEXT("EntryPoint"));
 }
 
 #define LOCTEXT_NAMESPACE "ThirdwebUncookedOnly"
@@ -144,6 +145,7 @@ void UK2Node_ThirdwebCreateWallet::AllocateDefaultPins()
 	SetPinDefaultValue(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Boolean, TwPins::Gasless), TEXT("true"));
 	SetPinAdvancedView(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::Factory));
 	SetPinAdvancedView(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::AccountOverride));
+	SetPinAdvancedView(CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_String, TwPins::EntryPoint));
 
 	// Smart Wallet Output Pins
 	SetPinFriendlyName(
@@ -242,6 +244,7 @@ bool UK2Node_ThirdwebCreateWallet::UpdatePins()
 	SetPinVisibility(GetGaslessPin(), Type == EThirdwebWalletType::Smart);
 	SetPinVisibility(GetFactoryPin(), Type == EThirdwebWalletType::Smart);
 	SetPinVisibility(GetAccountOverridePin(), Type == EThirdwebWalletType::Smart);
+	SetPinVisibility(GetEntryPointPin(), Type == EThirdwebWalletType::Smart);
 	SetPinVisibility(GetSmartWalletPin(), Type == EThirdwebWalletType::Smart);
 
 
@@ -285,6 +288,13 @@ UEdGraphPin* UK2Node_ThirdwebCreateWallet::GetFactoryPin() const
 UEdGraphPin* UK2Node_ThirdwebCreateWallet::GetAccountOverridePin() const
 {
 	UEdGraphPin* Pin = FindPin(TwPins::AccountOverride);
+	check(Pin == NULL || Pin->Direction == EGPD_Input);
+	return Pin;
+}
+
+UEdGraphPin* UK2Node_ThirdwebCreateWallet::GetEntryPointPin() const
+{
+	UEdGraphPin* Pin = FindPin(TwPins::EntryPoint);
 	check(Pin == NULL || Pin->Direction == EGPD_Input);
 	return Pin;
 }

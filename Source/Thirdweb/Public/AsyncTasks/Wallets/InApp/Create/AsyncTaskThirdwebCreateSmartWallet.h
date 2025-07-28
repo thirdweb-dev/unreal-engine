@@ -16,13 +16,16 @@ class THIRDWEB_API UAsyncTaskThirdwebCreateSmartWallet : public UAsyncTaskThirdw
 public:
 	virtual void Activate() override;
 
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AdvancedDisplay="Factory,AccountOverride"), Category="Thirdweb|Wallets|Smart")
+	UFUNCTION(BlueprintCallable,
+		meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject", AdvancedDisplay="Factory,AccountOverride,EntryPoint"),
+		Category="Thirdweb|Wallets|Smart")
 	static UAsyncTaskThirdwebCreateSmartWallet* CreateSmartWallet(UObject* WorldContextObject,
 	                                                              const FInAppWalletHandle& InAppWallet,
 	                                                              const int64 ChainID,
 	                                                              const bool bGasless = true,
 	                                                              const FString& Factory = "",
-	                                                              const FString& AccountOverride = "")
+	                                                              const FString& AccountOverride = "",
+	                                                              const FString& EntryPoint = "")
 	{
 		NEW_TASK
 		Task->InAppWallet = InAppWallet;
@@ -30,6 +33,7 @@ public:
 		Task->bGasless = bGasless;
 		Task->Factory = Factory;
 		Task->AccountOverride = AccountOverride;
+		Task->EntryPoint = EntryPoint;
 		RR_TASK
 	};
 
@@ -56,6 +60,9 @@ protected:
 
 	UPROPERTY(Transient)
 	FString AccountOverride;
+
+	UPROPERTY(Transient)
+	FString EntryPoint;
 
 private:
 	UFUNCTION()

@@ -52,10 +52,11 @@ public:
 	 * @param bGasless Boolean indicating whether the transaction is gasless.
 	 * @param Factory String identifying the factory contract.
 	 * @param AccountOverride String for account override.
+	 * @param EntryPoint String for the entry point contract.
 	 * @param SuccessDelegate Delegate to call upon successful creation of the smart wallet.
 	 * @param ErrorDelegate Delegate to call if there is an error during creation.
 	 */
-	static void Create(const FInAppWalletHandle& InInAppWallet, const int64 ChainID, const bool bGasless, const FString& Factory, const FString& AccountOverride, const FCreateSmartWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate);
+	static void Create(const FInAppWalletHandle& InInAppWallet, const int64 ChainID, const bool bGasless, const FString& Factory, const FString& AccountOverride, const FString& EntryPoint, const FCreateSmartWalletDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate);
 
 	/** Check if the smart wallet is deployed */
 	void IsDeployed(const FBoolDelegate& SuccessDelegate, const FStringDelegate& ErrorDelegate);

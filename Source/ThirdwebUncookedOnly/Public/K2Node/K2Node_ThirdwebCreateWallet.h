@@ -16,6 +16,7 @@ namespace TwPins
 	extern const FName Gasless;
 	extern const FName Factory;
 	extern const FName AccountOverride;
+	extern const FName EntryPoint;
 }
 
 UCLASS()
@@ -58,5 +59,6 @@ protected:
 	UEdGraphPin* GetGaslessPin() const;
 	UEdGraphPin* GetFactoryPin() const;
 	UEdGraphPin* GetAccountOverridePin() const;
+	UEdGraphPin* GetEntryPointPin() const;
 	virtual UEdGraphPin* GetSmartWalletPin() const override;
 };
