@@ -1,7 +1,7 @@
 {
   "FileVersion": 3,
-  "Version": 220,
-  "VersionName": "2.2.0",
+  "Version": 221,
+  "VersionName": "2.2.1",
   "FriendlyName": "Thirdweb SDK",
   "Description": "ThirdwebSDK for Unreal Engine",
   "Category": "Thirdweb",
