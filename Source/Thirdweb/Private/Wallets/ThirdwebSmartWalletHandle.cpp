@@ -9,6 +9,7 @@
 #include "ThirdwebRuntimeSettings.h"
 #include "ThirdwebUtils.h"
 
+#include "Containers/AnsiString.h"
 #include "Containers/ThirdwebSigner.h"
 
 #include "Dom/JsonObject.h"
