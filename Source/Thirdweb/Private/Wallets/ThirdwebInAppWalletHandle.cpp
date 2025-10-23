@@ -158,7 +158,7 @@ void FInAppWalletHandle::CreateSiweWallet(const FCreateInAppWalletDelegate& Succ
 	CHECK_DELEGATES(SuccessDelegate, ErrorDelegate)
 	UE::Tasks::Launch(UE_SOURCE_LOCATION, [SuccessDelegate, ErrorDelegate]
 	{
-		static FString Provider = TEXT("SIWE");
+		static FString Provider = TEXT("Siwe");
 		FString Error;
 		if (Thirdweb::create_ecosystem_wallet(
 			TO_RUST_STRING(UThirdwebRuntimeSettings::GetEcosystemId()),
@@ -598,8 +598,8 @@ void FInAppWalletHandle::LinkSiwe(const FInAppWalletHandle& Wallet, const FStrin
 			nullptr,
 			nullptr,
 			nullptr,
-			TO_RUST_STRING(Signature),
-			TO_RUST_STRING(Payload)).AssignResult(Error, true))
+			TO_RUST_STRING(Payload),
+			TO_RUST_STRING(Signature)).AssignResult(Error, true))
 		{
 			SuccessDelegate.Execute();
 			return;
