@@ -331,7 +331,7 @@ public:
 			{Phone, TEXT("Phone")},
 			{Jwt, TEXT("JWT")},
 			{AuthEndpoint, TEXT("AuthEndpoint")},
-			{Siwe, TEXT("SIWE")},
+			{Siwe, TEXT("Siwe")},
 			{Guest, TEXT("Guest")},
 		};
 		return Map.Contains(Source) ? Map[Source] : TEXT("Unknown");

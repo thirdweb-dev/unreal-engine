@@ -2,13 +2,14 @@
 
 #include "Browser/ThirdwebOAuthBrowserUserWidget.h"
 
-#include "ThirdwebLog.h"
-#include "ThirdwebRuntimeSettings.h"
+#include "Async/TaskGraphInterfaces.h"
 #include "Blueprint/WidgetTree.h"
 #include "Browser/ThirdwebOAuthExternalBrowser.h"
 #include "Components/Overlay.h"
 #include "Components/OverlaySlot.h"
 #include "Components/PanelWidget.h"
+#include "ThirdwebLog.h"
+#include "ThirdwebRuntimeSettings.h"
 
 #if PLATFORM_ANDROID
 #include "Android/AndroidApplication.h"
@@ -70,7 +71,7 @@ void UThirdwebOAuthBrowserUserWidget::BeginDestroy()
 FString UThirdwebOAuthBrowserUserWidget::GetDummyUrl()
 {
 #if PLATFORM_ANDROID
-	return UThirdwebRuntimeSettings::GetAppUri();
+  return UThirdwebRuntimeSettings::GetAppUri();
 #else
 	return DummyUrl;
 #endif
@@ -88,8 +89,8 @@ void UThirdwebOAuthBrowserUserWidget::Authenticate(const FInAppWalletHandle& InA
 	TW_LOG(VeryVerbose, TEXT("OAuthBrowserUserWidget::Authenticate::Wallet Type::%s"), Wallet.GetSourceString());
 	if (Wallet == FInAppWalletHandle::Siwe)
 	{
-		TW_LOG(VeryVerbose, TEXT("OAuthBrowserUserWidget::Authenticate::Authenticating against SIWE"));
-		ExternalBrowser->Authenticate(TEXT("SIWE"));
+		TW_LOG(VeryVerbose, TEXT("OAuthBrowserUserWidget::Authenticate::" "Authenticating against %s"), Wallet.GetSourceString());
+		ExternalBrowser->Authenticate(Wallet.GetSourceString());
 		return;
 	}
 
@@ -102,17 +103,21 @@ void UThirdwebOAuthBrowserUserWidget::Authenticate(const FInAppWalletHandle& InA
 	TW_LOG(VeryVerbose, TEXT("OAuthBrowserUserWidget::Authenticate::Authenticating against %s"), *Link);
 
 #if PLATFORM_ANDROID
-	if (JNIEnv *Env = FAndroidApplication::GetJavaEnv())
-	{
-		jstring JUrl = Env->NewStringUTF(TCHAR_TO_UTF8(*Link));
-		jclass JClass = FAndroidApplication::FindJavaClass("com/thirdweb/unrealengine/ThirdwebActivity");
-		static jmethodID JLaunchUrl = FJavaWrapper::FindStaticMethod(Env, JClass, "startActivity", "(Landroid/app/Activity;Ljava/lang/String;)V", false);
-		ThirdwebUtils::Internal::Android::CallJniStaticVoidMethod(Env, JClass, JLaunchUrl, FJavaWrapper::GameActivityThis, JUrl);
-		TW_LOG(Verbose, TEXT("OAuthBrowserUserWidget::Authenticate::Opening CustomTabs"));
-		return;
-	}
-	TW_LOG(Error, TEXT("OAuthBrowserUserWidget::Authenticate::No JNIEnv found"));
-	return;
+  if (JNIEnv *Env = FAndroidApplication::GetJavaEnv()) {
+    jstring JUrl = Env->NewStringUTF(TCHAR_TO_UTF8(*Link));
+    jclass JClass = FAndroidApplication::FindJavaClass(
+        "com/thirdweb/unrealengine/ThirdwebActivity");
+    static jmethodID JLaunchUrl = FJavaWrapper::FindStaticMethod(
+        Env, JClass, "startActivity",
+        "(Landroid/app/Activity;Ljava/lang/String;)V", false);
+    ThirdwebUtils::Internal::Android::CallJniStaticVoidMethod(
+        Env, JClass, JLaunchUrl, FJavaWrapper::GameActivityThis, JUrl);
+    TW_LOG(Verbose,
+           TEXT("OAuthBrowserUserWidget::Authenticate::Opening CustomTabs"));
+    return;
+  }
+  TW_LOG(Error, TEXT("OAuthBrowserUserWidget::Authenticate::No JNIEnv found"));
+  return;
 #endif
 
 	return ExternalBrowser->Authenticate(Link);
@@ -156,9 +161,27 @@ void UThirdwebOAuthBrowserUserWidget::HandleAuthenticated(const FString& AuthRes
 	OnAuthenticated.Broadcast(AuthResult);
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleSiweComplete(const FString& Signature, const FString& Payload)
+void UThirdwebOAuthBrowserUserWidget::HandleSiweComplete(const FString& Payload, const FString& Signature)
 {
-	OnSiweComplete.Broadcast(Signature, Payload);
+	if (IsInGameThread())
+	{
+		OnSiweComplete.Broadcast(Payload, Signature);
+	}
+	else
+	{
+		// Dispatch to game thread
+		TWeakObjectPtr<UThirdwebOAuthBrowserUserWidget> WeakThis = this;
+		FFunctionGraphTask::CreateAndDispatchWhenReady([WeakThis, Payload, Signature]()
+		                                               {
+			                                               if (WeakThis.IsValid())
+			                                               {
+				                                               WeakThis->OnSiweComplete.Broadcast(Payload, Signature);
+			                                               }
+		                                               },
+		                                               TStatId(),
+		                                               nullptr,
+		                                               ENamedThreads::GameThread);
+	}
 }
 
 void UThirdwebOAuthBrowserUserWidget::HandleError(const FString& Error)
@@ -167,16 +190,18 @@ void UThirdwebOAuthBrowserUserWidget::HandleError(const FString& Error)
 }
 
 #if PLATFORM_ANDROID
-void UThirdwebOAuthBrowserUserWidget::HandleDeepLink(const FString &Url)
-{
-	TW_LOG(VeryVerbose, TEXT("UThirdwebOAuthBrowserUserWidget::HandleDeepLink::%s"), *Url);
-	HandleUrlChanged(Url);
+void UThirdwebOAuthBrowserUserWidget::HandleDeepLink(const FString &Url) {
+  TW_LOG(VeryVerbose,
+         TEXT("UThirdwebOAuthBrowserUserWidget::HandleDeepLink::%s"), *Url);
+  HandleUrlChanged(Url);
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleCustomTabsDismissed(const FString &Url)
-{
-	TW_LOG(VeryVerbose, TEXT("UThirdwebOAuthBrowserUserWidget::HandleCustomTabsDismissed::%s"), *Url);
-	HandleUrlChanged(Url);
+void UThirdwebOAuthBrowserUserWidget::HandleCustomTabsDismissed(
+    const FString &Url) {
+  TW_LOG(VeryVerbose,
+         TEXT("UThirdwebOAuthBrowserUserWidget::HandleCustomTabsDismissed::%s"),
+         *Url);
+  HandleUrlChanged(Url);
 }
 #endif
 
@@ -188,7 +213,7 @@ void UThirdwebOAuthBrowserUserWidget::SetVisible(const bool bVisible)
 		if (bCollapseWhenBlank)
 		{
 #if PLATFORM_IOS | PLATFORM_ANDROID
-			SetRenderOpacity(1.0f);
+      SetRenderOpacity(1.0f);
 #else
 			SetVisibility(ESlateVisibility::Visible);
 #endif
@@ -200,7 +225,7 @@ void UThirdwebOAuthBrowserUserWidget::SetVisible(const bool bVisible)
 		if (bCollapseWhenBlank)
 		{
 #if PLATFORM_IOS | PLATFORM_ANDROID
-			SetRenderOpacity(0.01f);
+      SetRenderOpacity(0.01f);
 #else
 			SetVisibility(ESlateVisibility::Collapsed);
 #endif

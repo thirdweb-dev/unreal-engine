@@ -6,6 +6,7 @@
 #include "Wallets/ThirdwebInAppWalletHandle.h"
 #include "ThirdwebOAuthBrowserUserWidget.generated.h"
 
+
 UCLASS(DisplayName = "OAuth Browser")
 class THIRDWEB_API UThirdwebOAuthBrowserUserWidget : public UUserWidget
 {
@@ -17,7 +18,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Thirdweb|OAuth Browser")
 	FOnAuthenticatedDelegate OnAuthenticated;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSiweCompleteDelegate, const FString &, Signature, const FString &, Payload);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSiweCompleteDelegate, const FString &, Payload, const FString &, Signature);
 
 	UPROPERTY(BlueprintAssignable, Category = "Thirdweb|OAuth Browser")
 	FOnSiweCompleteDelegate OnSiweComplete;
@@ -45,7 +46,8 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Browser")
 	bool bCollapseWhenBlank = true;
 
-	/** Automatically authenticate on Construct. Only works when created with a Wallet */
+	/** Automatically authenticate on Construct. Only works when created with a
+	 * Wallet */
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Browser")
 	bool bAuthenticateOnConstruct = false;
 
@@ -77,13 +79,13 @@ protected:
 	virtual void HandleOnBeforePopup(const FString& Url, const FString& Frame);
 
 	virtual void HandleAuthenticated(const FString& AuthResult);
-	virtual void HandleSiweComplete(const FString& Signature, const FString& Payload);
+	virtual void HandleSiweComplete(const FString& Payload, const FString& Signature);
 	virtual void HandleError(const FString& Error);
 
 public:
 #if PLATFORM_ANDROID
-	void HandleDeepLink(const FString &Url);
-	void HandleCustomTabsDismissed(const FString &Url);
+  void HandleDeepLink(const FString &Url);
+  void HandleCustomTabsDismissed(const FString &Url);
 #endif
 
 	UFUNCTION(BlueprintCallable, Category = "Thirdweb|OAuth Browser")

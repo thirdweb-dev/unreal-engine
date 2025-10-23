@@ -2,15 +2,15 @@
 
 #include "Browser/ThirdwebOAuthExternalBrowser.h"
 
-#include "HttpRequestHandler.h"
-#include "HttpServerModule.h"
-#include "IHttpRouter.h"
-#include "ThirdwebLog.h"
-#include "ThirdwebRuntimeSettings.h"
 #include "Delegates/DelegateSignatureImpl.inl"
 #include "GenericPlatform/GenericPlatformHttp.h"
 #include "HAL/Event.h"
+#include "HttpRequestHandler.h"
+#include "HttpServerModule.h"
+#include "IHttpRouter.h"
 #include "Misc/EngineVersionComparison.h"
+#include "ThirdwebLog.h"
+#include "ThirdwebRuntimeSettings.h"
 
 UThirdwebOAuthExternalBrowser::UThirdwebOAuthExternalBrowser()
 {
@@ -21,6 +21,16 @@ UThirdwebOAuthExternalBrowser::UThirdwebOAuthExternalBrowser()
 
 void UThirdwebOAuthExternalBrowser::Authenticate(const FString& Link)
 {
+	// Clean up any previous authentication session
+	CleanupAuthentication();
+
+	// Reset state
+	State = Initialized;
+	bIsSiwe = false;
+	AuthResult.Empty();
+	Signature.Empty();
+	Payload.Empty();
+
 	FString Url = Link;
 	EModuleLoadResult ModuleResult;
 	FModuleManager::Get().LoadModuleWithFailureReason(FName(TEXT("HTTPServer")), ModuleResult);
@@ -34,22 +44,22 @@ void UThirdwebOAuthExternalBrowser::Authenticate(const FString& Link)
 	{
 		return HandleError(TEXT("Failed to get HTTP Router"));
 	}
-	
+
 	AuthEvent = FPlatformProcess::GetSynchEventFromPool(false);
 
 #if UE_VERSION_OLDER_THAN(5, 4, 0)
-	FHttpRequestHandler Handler = [WeakThis = MakeWeakObjectPtr(this)](const FHttpServerRequest& Request, const FHttpResultCallback& OnComplete)
-	{
-		if (WeakThis.IsValid())
-		{
-			return WeakThis->CallbackRequestHandler(Request, OnComplete);
-		}
-		return false;
-	};
+  FHttpRequestHandler Handler = [WeakThis = MakeWeakObjectPtr(this)](
+                                    const FHttpServerRequest &Request,
+                                    const FHttpResultCallback &OnComplete) {
+    if (WeakThis.IsValid()) {
+      return WeakThis->CallbackRequestHandler(Request, OnComplete);
+    }
+    return false;
+  };
 #else
 	FHttpRequestHandler Handler = FHttpRequestHandler::CreateUObject(this, &UThirdwebOAuthExternalBrowser::CallbackRequestHandler);
 #endif
-	
+
 	RouteHandle = Router->BindRoute(FHttpPath(TEXT("/callback")), EHttpServerRequestVerbs::VERB_GET, Handler);
 
 	if (!RouteHandle.IsValid())
@@ -65,11 +75,12 @@ void UThirdwebOAuthExternalBrowser::Authenticate(const FString& Link)
 	bIsSiwe = Url.ToUpper().TrimStartAndEnd().Equals(TEXT("SIWE"));
 	if (bIsSiwe)
 	{
-		Url = FString::Printf(TEXT("http://static.thirdweb.com/auth/siwe?redirectUrl=%s"), *FGenericPlatformHttp::UrlEncode(TEXT("http://localhost:8789/callback")));
+		Url = FString::Printf(TEXT("http://static.thirdweb.com/auth/siwe?redirectUrl=%s"),
+		                      *FGenericPlatformHttp::UrlEncode(TEXT("http://localhost:8789/callback")));
 	}
 	// Open the browser with the login URL
-	FPlatformProcess::LaunchURL(*Link, nullptr, nullptr);
-	TW_LOG(Verbose, TEXT("Browser opened with URL: %s"), *Link);
+	FPlatformProcess::LaunchURL(*Url, nullptr, nullptr);
+	TW_LOG(Verbose, TEXT("Browser opened with URL: %s"), *Url);
 	State = AuthPending;
 }
 
@@ -86,36 +97,29 @@ void UThirdwebOAuthExternalBrowser::Tick(float DeltaTime)
 			{
 				return HandleSuccess();
 			}
-		} else
+		}
+		else
 		{
 			if (!AuthResult.IsEmpty())
 			{
 				return HandleSuccess();
 			}
 		}
-		
+
 		HandleError(TEXT("OAuth login flow did not complete in time"));
 	}
 }
 
 void UThirdwebOAuthExternalBrowser::BeginDestroy()
 {
-	// Stop the HTTP listener
+	// Clean up authentication resources (idempotent)
+	CleanupAuthentication();
+
+	// Stop the HTTP listener (this stops ALL listeners globally)
 	FHttpServerModule::Get().StopAllListeners();
 	TW_LOG(VeryVerbose, TEXT("OAuth HTTP Server stopped listening"));
 
-	if (Router.IsValid() && RouteHandle.IsValid())
-	{
-		// Unbind the route
-		Router->UnbindRoute(RouteHandle);
-		TW_LOG(VeryVerbose, TEXT("Route unbound"));
-	}
-	if (AuthEvent)
-	{
-		FPlatformProcess::ReturnSynchEventToPool(AuthEvent);
-	}
 	ConditionalBeginDestroy();
-	
 	UObject::BeginDestroy();
 }
 
@@ -124,7 +128,11 @@ bool UThirdwebOAuthExternalBrowser::CallbackRequestHandler(const FHttpServerRequ
 	AuthResult = Request.QueryParams.FindRef(TEXT("authResult"));
 	Signature = Request.QueryParams.FindRef(TEXT("signature"));
 	Payload = FGenericPlatformHttp::UrlDecode(Request.QueryParams.FindRef(TEXT("payload")));
-	TW_LOG(VeryVerbose, TEXT("UThirdwebOAuthExternalBrowser::CallbackRequestHandler::Signature=%s|Payload=%s|AuthResult=%s"), *Signature, *Payload, *AuthResult)
+	TW_LOG(VeryVerbose,
+	       TEXT("UThirdwebOAuthExternalBrowser::CallbackRequestHandler::" "Signature=%s|Payload=%s|AuthResult=%s"),
+	       *Signature,
+	       *Payload,
+	       *AuthResult)
 	if (bIsSiwe ? Signature.IsEmpty() || Payload.IsEmpty() : AuthResult.IsEmpty())
 	{
 		FString Error = FString::Printf(TEXT("%s query parameter is missing"), bIsSiwe ? TEXT("Signature/Payload") : TEXT("AuthResult"));
@@ -138,8 +146,7 @@ bool UThirdwebOAuthExternalBrowser::CallbackRequestHandler(const FHttpServerRequ
 		AuthEvent->Trigger();
 		TUniquePtr<FHttpServerResponse> Response = FHttpServerResponse::Create(
 			FString::Printf(TEXT("<script>window.location.replace('%s')</script>"), *UThirdwebRuntimeSettings::GetExternalAuthRedirectUri()),
-			TEXT("text/html")
-		);
+			TEXT("text/html"));
 		OnComplete(MoveTemp(Response));
 	}
 	return true;
@@ -151,27 +158,48 @@ void UThirdwebOAuthExternalBrowser::HandleSuccess()
 	{
 		if (OnSiweComplete.IsBound())
 		{
-			OnSiweComplete.Execute(Signature, Payload);
+			OnSiweComplete.Execute(Payload, Signature);
 		}
-	} else
+	}
+	else
 	{
 		if (OnAuthenticated.IsBound())
 		{
 			OnAuthenticated.Execute(AuthResult);
 		}
 	}
-	
+
+	// Clean up immediately after delegate fires
+	CleanupAuthentication();
 }
 
 void UThirdwebOAuthExternalBrowser::HandleError(const FString& Error)
 {
-	
 	TW_LOG(VeryVerbose, TEXT("UThirdwebOAuthExternalBrowser::HandleError::%s"), *Error);
 	if (OnError.IsBound())
 	{
 		OnError.Execute(Error);
 	}
+
+	// Clean up immediately after delegate fires
+	CleanupAuthentication();
 }
 
+void UThirdwebOAuthExternalBrowser::CleanupAuthentication()
+{
+	// Unbind route if it exists
+	if (Router.IsValid() && RouteHandle.IsValid())
+	{
+		Router->UnbindRoute(RouteHandle);
+		RouteHandle = FHttpRouteHandle();
+		TW_LOG(VeryVerbose, TEXT("Route unbound in cleanup"));
+	}
 
-
+	// Return event to pool
+	if (AuthEvent)
+	{
+		FPlatformProcess::ReturnSynchEventToPool(AuthEvent);
+		AuthEvent = nullptr;
+		TW_LOG(VeryVerbose, TEXT("AuthEvent returned to pool"));
+	}
+}

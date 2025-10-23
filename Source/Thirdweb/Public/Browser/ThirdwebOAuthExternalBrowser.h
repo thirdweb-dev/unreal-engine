@@ -7,10 +7,11 @@
 #include "UObject/Object.h"
 #include "ThirdwebOAuthExternalBrowser.generated.h"
 
+
 class IHttpRouter;
 
 /**
- * 
+ *
  */
 UCLASS(NotBlueprintable, NotBlueprintType, MinimalAPI)
 class UThirdwebOAuthExternalBrowser : public UObject, public FTickableGameObject
@@ -19,34 +20,30 @@ class UThirdwebOAuthExternalBrowser : public UObject, public FTickableGameObject
 
 public:
 	UThirdwebOAuthExternalBrowser();
-	
+
 	void Authenticate(const FString& Link);
-	
+
 	/** FTickableGameObject implementation */
 	virtual void Tick(float DeltaTime) override;
 	virtual TStatId GetStatId() const override { return TStatId(); };
 	virtual void BeginDestroy() override;
-	
+
 private:
 	bool CallbackRequestHandler(const FHttpServerRequest& Request, const FHttpResultCallback& OnComplete);
 	void HandleSuccess();
 	void HandleError(const FString& Error);
+	void CleanupAuthentication();
 
 public:
-	DECLARE_DELEGATE_OneParam(FSimpleStringDelegate, const FString&);
+	DECLARE_DELEGATE_OneParam(FSimpleStringDelegate, const FString &);
 	FSimpleStringDelegate OnAuthenticated;
 	FSimpleStringDelegate OnError;
-	
-	DECLARE_DELEGATE_TwoParams(FDoubleStringDelegate, const FString&, const FString&);
+
+	DECLARE_DELEGATE_TwoParams(FDoubleStringDelegate, const FString &, const FString &);
 	FDoubleStringDelegate OnSiweComplete;
+
 private:
-	enum EState
-	{
-		Initialized,
-		AuthPending,
-		AuthComplete,
-		Complete
-	};
+	enum EState { Initialized, AuthPending, AuthComplete, Complete };
 
 	// OAuth
 	FString AuthResult;
@@ -54,7 +51,7 @@ private:
 	FString Signature;
 	FString Payload;
 	bool bIsSiwe;
-	
+
 	FEvent* AuthEvent;
 	FHttpRouteHandle RouteHandle;
 	TSharedPtr<IHttpRouter> Router;

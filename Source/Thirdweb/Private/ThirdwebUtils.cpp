@@ -516,7 +516,7 @@ namespace ThirdwebUtils
 				{TEXT("x-bundle-id"), Settings->GetBundleId()},
 			});
 			Headers.UpdateRequest(Request);
-			Request->SetTimeout(5.0f);
+			Request->SetTimeout(15.0f);
 
 			// ReSharper disable once CppLocalVariableMayBeConst
 			TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
