@@ -16,91 +16,91 @@
 #include "Browser/Android/ThirdwebAndroidJNI.h"
 #endif
 
-const FString UThirdwebOAuthBrowserUserWidget::BackendUrlPrefix =
-    TEXT("https://embedded-wallet.thirdweb.com/");
-const FString UThirdwebOAuthBrowserUserWidget::DummyUrl =
-    TEXT("http://localhost:8789/callback");
+const FString UThirdwebOAuthBrowserUserWidget::BackendUrlPrefix = TEXT("https://embedded-wallet.thirdweb.com/");
+const FString UThirdwebOAuthBrowserUserWidget::DummyUrl = TEXT("http://localhost:8789/callback");
 
-TSharedRef<SWidget> UThirdwebOAuthBrowserUserWidget::RebuildWidget() {
-  // RebuildWidget is not called until the widget is first added to the
-  // viewport.
+TSharedRef<SWidget> UThirdwebOAuthBrowserUserWidget::RebuildWidget()
+{
+	// RebuildWidget is not called until the widget is first added to the
+	// viewport.
 
-  UPanelWidget *RootWidget = Cast<UPanelWidget>(GetRootWidget());
+	UPanelWidget* RootWidget = Cast<UPanelWidget>(GetRootWidget());
 
-  // Construct root widget if needed
-  if (!RootWidget) {
-    RootWidget = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass(),
-                                                       TEXT("RootWidget"));
-    WidgetTree->RootWidget = RootWidget;
-  }
+	// Construct root widget if needed
+	if (!RootWidget)
+	{
+		RootWidget = WidgetTree->ConstructWidget<UOverlay>(UOverlay::StaticClass(), TEXT("RootWidget"));
+		WidgetTree->RootWidget = RootWidget;
+	}
 
-  // Construct children
-  if (RootWidget) {
-    // Construct External browser
-    ExternalBrowser = NewObject<UThirdwebOAuthExternalBrowser>(this);
-    ExternalBrowser->OnAuthenticated.BindUObject(
-        this, &ThisClass::HandleAuthenticated);
-    ExternalBrowser->OnError.BindUObject(this, &ThisClass::HandleError);
-    ExternalBrowser->OnSiweComplete.BindUObject(this,
-                                                &ThisClass::HandleSiweComplete);
-  }
+	// Construct children
+	if (RootWidget)
+	{
+		// Construct External browser
+		ExternalBrowser = NewObject<UThirdwebOAuthExternalBrowser>(this);
+		ExternalBrowser->OnAuthenticated.BindUObject(this, &ThisClass::HandleAuthenticated);
+		ExternalBrowser->OnError.BindUObject(this, &ThisClass::HandleError);
+		ExternalBrowser->OnSiweComplete.BindUObject(this, &ThisClass::HandleSiweComplete);
+	}
 
-  return Super::RebuildWidget();
+	return Super::RebuildWidget();
 }
 
 #if WITH_EDITOR
-const FText UThirdwebOAuthBrowserUserWidget::GetPaletteCategory() {
-  return NSLOCTEXT("Thirdweb", "Thirdweb", "Thirdweb");
+const FText UThirdwebOAuthBrowserUserWidget::GetPaletteCategory()
+{
+	return NSLOCTEXT("Thirdweb", "Thirdweb", "Thirdweb");
 }
 #endif
 
-void UThirdwebOAuthBrowserUserWidget::OnWidgetRebuilt() {
-  Super::OnWidgetRebuilt();
-  SetVisible(false);
+void UThirdwebOAuthBrowserUserWidget::OnWidgetRebuilt()
+{
+	Super::OnWidgetRebuilt();
+	SetVisible(false);
 }
 
-void UThirdwebOAuthBrowserUserWidget::BeginDestroy() {
-  if (ExternalBrowser) {
-    ExternalBrowser->ConditionalBeginDestroy();
-  }
-  Super::BeginDestroy();
+void UThirdwebOAuthBrowserUserWidget::BeginDestroy()
+{
+	if (ExternalBrowser)
+	{
+		ExternalBrowser->ConditionalBeginDestroy();
+	}
+	Super::BeginDestroy();
 }
 
-FString UThirdwebOAuthBrowserUserWidget::GetDummyUrl() {
+FString UThirdwebOAuthBrowserUserWidget::GetDummyUrl()
+{
 #if PLATFORM_ANDROID
   return UThirdwebRuntimeSettings::GetAppUri();
 #else
-  return DummyUrl;
+	return DummyUrl;
 #endif
 }
 
-void UThirdwebOAuthBrowserUserWidget::Authenticate(
-    const FInAppWalletHandle &InAppWallet) {
-  // Validate Wallet
-  if (!InAppWallet.IsValid()) {
-    TW_LOG(Error, TEXT("OAuthBrowserUserWidget::Authenticate::Wallet invalid"));
-    return HandleError(TEXT("Invalid Wallet"));
-  }
-  Wallet = InAppWallet;
-  TW_LOG(VeryVerbose,
-         TEXT("OAuthBrowserUserWidget::Authenticate::Wallet Type::%s"),
-         Wallet.GetSourceString());
-  if (Wallet == FInAppWalletHandle::Siwe) {
-    TW_LOG(VeryVerbose, TEXT("OAuthBrowserUserWidget::Authenticate::"
-               "Authenticating against %s"), Wallet.GetSourceString());
-    ExternalBrowser->Authenticate(Wallet.GetSourceString());
-    return;
-  }
+void UThirdwebOAuthBrowserUserWidget::Authenticate(const FInAppWalletHandle& InAppWallet)
+{
+	// Validate Wallet
+	if (!InAppWallet.IsValid())
+	{
+		TW_LOG(Error, TEXT("OAuthBrowserUserWidget::Authenticate::Wallet invalid"));
+		return HandleError(TEXT("Invalid Wallet"));
+	}
+	Wallet = InAppWallet;
+	TW_LOG(VeryVerbose, TEXT("OAuthBrowserUserWidget::Authenticate::Wallet Type::%s"), Wallet.GetSourceString());
+	if (Wallet == FInAppWalletHandle::Siwe)
+	{
+		TW_LOG(VeryVerbose, TEXT("OAuthBrowserUserWidget::Authenticate::" "Authenticating against %s"), Wallet.GetSourceString());
+		ExternalBrowser->Authenticate(Wallet.GetSourceString());
+		return;
+	}
 
-  // Get Login URL
-  FString Link;
-  if (FString Error; !Wallet.FetchOAuthLoginURL(GetDummyUrl(), Link, Error)) {
-    return HandleError(Error);
-  }
-  TW_LOG(
-      VeryVerbose,
-      TEXT("OAuthBrowserUserWidget::Authenticate::Authenticating against %s"),
-      *Link);
+	// Get Login URL
+	FString Link;
+	if (FString Error; !Wallet.FetchOAuthLoginURL(GetDummyUrl(), Link, Error))
+	{
+		return HandleError(Error);
+	}
+	TW_LOG(VeryVerbose, TEXT("OAuthBrowserUserWidget::Authenticate::Authenticating against %s"), *Link);
 
 #if PLATFORM_ANDROID
   if (JNIEnv *Env = FAndroidApplication::GetJavaEnv()) {
@@ -120,63 +120,73 @@ void UThirdwebOAuthBrowserUserWidget::Authenticate(
   return;
 #endif
 
-  return ExternalBrowser->Authenticate(Link);
+	return ExternalBrowser->Authenticate(Link);
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleUrlChanged(const FString &Url) {
-  TW_LOG(Verbose, TEXT("OAuthBrowserUserWidget::HandleUrlChanged::%s"), *Url);
-  if (Url.IsEmpty() ||
-      (Url.StartsWith(BackendUrlPrefix) &&
-       !Url.StartsWith(BackendUrlPrefix + TEXT("sdk/oauth")))) {
-    return SetVisible(false);
-  }
-  if (Url.StartsWith(GetDummyUrl())) {
-    SetVisible(false);
-    FString Left, Right;
-    if (Url.Split(TEXT("authResult="), &Left, &Right,
-                  ESearchCase::IgnoreCase)) {
-      return HandleAuthenticated(Right);
-    }
-    return HandleError(TEXT("Failed to match AuthResult in url"));
-  }
-  bShouldBeVisible = true;
+void UThirdwebOAuthBrowserUserWidget::HandleUrlChanged(const FString& Url)
+{
+	TW_LOG(Verbose, TEXT("OAuthBrowserUserWidget::HandleUrlChanged::%s"), *Url);
+	if (Url.IsEmpty() || (Url.StartsWith(BackendUrlPrefix) && !Url.StartsWith(BackendUrlPrefix + TEXT("sdk/oauth"))))
+	{
+		return SetVisible(false);
+	}
+	if (Url.StartsWith(GetDummyUrl()))
+	{
+		SetVisible(false);
+		FString Left, Right;
+		if (Url.Split(TEXT("authResult="), &Left, &Right, ESearchCase::IgnoreCase))
+		{
+			return HandleAuthenticated(Right);
+		}
+		return HandleError(TEXT("Failed to match AuthResult in url"));
+	}
+	bShouldBeVisible = true;
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandlePageLoaded(const FString &Url) {
-  if (bShouldBeVisible) {
-    SetVisible(true);
-  }
+void UThirdwebOAuthBrowserUserWidget::HandlePageLoaded(const FString& Url)
+{
+	if (bShouldBeVisible)
+	{
+		SetVisible(true);
+	}
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleOnBeforePopup(
-    const FString &Url, const FString &Frame) {
-  return OnPopup.Broadcast(Url, Frame);
+void UThirdwebOAuthBrowserUserWidget::HandleOnBeforePopup(const FString& Url, const FString& Frame)
+{
+	return OnPopup.Broadcast(Url, Frame);
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleAuthenticated(
-    const FString &AuthResult) {
-  OnAuthenticated.Broadcast(AuthResult);
+void UThirdwebOAuthBrowserUserWidget::HandleAuthenticated(const FString& AuthResult)
+{
+	OnAuthenticated.Broadcast(AuthResult);
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleSiweComplete(
-    const FString &Payload, const FString &Signature) {
-  if (IsInGameThread()) {
-    OnSiweComplete.Broadcast(Payload, Signature);
-  } else {
-    // Dispatch to game thread
-    TWeakObjectPtr<UThirdwebOAuthBrowserUserWidget> WeakThis = this;
-    FFunctionGraphTask::CreateAndDispatchWhenReady(
-        [WeakThis, Payload, Signature]() {
-          if (WeakThis.IsValid()) {
-            WeakThis->OnSiweComplete.Broadcast(Payload, Signature);
-          }
-        },
-        TStatId(), nullptr, ENamedThreads::GameThread);
-  }
+void UThirdwebOAuthBrowserUserWidget::HandleSiweComplete(const FString& Payload, const FString& Signature)
+{
+	if (IsInGameThread())
+	{
+		OnSiweComplete.Broadcast(Payload, Signature);
+	}
+	else
+	{
+		// Dispatch to game thread
+		TWeakObjectPtr<UThirdwebOAuthBrowserUserWidget> WeakThis = this;
+		FFunctionGraphTask::CreateAndDispatchWhenReady([WeakThis, Payload, Signature]()
+		                                               {
+			                                               if (WeakThis.IsValid())
+			                                               {
+				                                               WeakThis->OnSiweComplete.Broadcast(Payload, Signature);
+			                                               }
+		                                               },
+		                                               TStatId(),
+		                                               nullptr,
+		                                               ENamedThreads::GameThread);
+	}
 }
 
-void UThirdwebOAuthBrowserUserWidget::HandleError(const FString &Error) {
-  OnError.Broadcast(Error);
+void UThirdwebOAuthBrowserUserWidget::HandleError(const FString& Error)
+{
+	OnError.Broadcast(Error);
 }
 
 #if PLATFORM_ANDROID
@@ -195,24 +205,30 @@ void UThirdwebOAuthBrowserUserWidget::HandleCustomTabsDismissed(
 }
 #endif
 
-void UThirdwebOAuthBrowserUserWidget::SetVisible(const bool bVisible) {
-  // Mobile webview needs to be visible to work
-  if (bVisible) {
-    if (bCollapseWhenBlank) {
+void UThirdwebOAuthBrowserUserWidget::SetVisible(const bool bVisible)
+{
+	// Mobile webview needs to be visible to work
+	if (bVisible)
+	{
+		if (bCollapseWhenBlank)
+		{
 #if PLATFORM_IOS | PLATFORM_ANDROID
       SetRenderOpacity(1.0f);
 #else
-      SetVisibility(ESlateVisibility::Visible);
+			SetVisibility(ESlateVisibility::Visible);
 #endif
-    }
-  } else {
-    bShouldBeVisible = false;
-    if (bCollapseWhenBlank) {
+		}
+	}
+	else
+	{
+		bShouldBeVisible = false;
+		if (bCollapseWhenBlank)
+		{
 #if PLATFORM_IOS | PLATFORM_ANDROID
       SetRenderOpacity(0.01f);
 #else
-      SetVisibility(ESlateVisibility::Collapsed);
+			SetVisibility(ESlateVisibility::Collapsed);
 #endif
-    }
-  }
+		}
+	}
 }
